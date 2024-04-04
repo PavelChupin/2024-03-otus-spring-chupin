@@ -3,6 +3,8 @@ package ru.otus.hw.service;
 import lombok.RequiredArgsConstructor;
 import ru.otus.hw.dao.QuestionDao;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 @RequiredArgsConstructor
 public class TestServiceImpl implements TestService {
 
@@ -18,7 +20,8 @@ public class TestServiceImpl implements TestService {
 
         questionDao.findAll().forEach(q -> {
             ioService.printFormattedLine(q.getText());
-            q.getAnswers().forEach(a -> ioService.printFormattedLine(a.getText()));
+            final AtomicInteger number = new AtomicInteger(1);
+            q.getAnswers().forEach(a -> ioService.printFormattedLine(number.getAndIncrement() + ". " + a.getText()));
         });
     }
 }

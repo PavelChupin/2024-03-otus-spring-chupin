@@ -20,14 +20,13 @@ public class CsvQuestionDao implements QuestionDao {
 
     @Override
     public List<Question> findAll() {
-        try {
+        try (final InputStreamReader in = new InputStreamReader(Objects.requireNonNull(this.getClass().getClassLoader()
+                .getResourceAsStream(fileNameProvider.getTestFileName())), StandardCharsets.UTF_8)) {
+
             // Использовать CsvToBean
             // https://opencsv.sourceforge.net/#collection_based_bean_fields_one_to_many_mappings
             // Использовать QuestionReadException
             // Про ресурсы: https://mkyong.com/java/java-read-a-file-from-resources-folder/
-
-            final InputStreamReader in = new InputStreamReader(Objects.requireNonNull(this.getClass().getClassLoader()
-                    .getResourceAsStream(fileNameProvider.getTestFileName())), StandardCharsets.UTF_8);
 
             final CsvToBean<QuestionDto> csv = new CsvToBeanBuilder(in)
                     .withType(QuestionDto.class)
@@ -38,7 +37,7 @@ public class CsvQuestionDao implements QuestionDao {
             return csv.parse().stream()
                     .map(QuestionDto::toDomainObject)
                     .collect(Collectors.toList());
-        } catch (Throwable e) {
+        } catch (Exception e) {
             throw new QuestionReadException(e.getMessage(), e);
         }
     }

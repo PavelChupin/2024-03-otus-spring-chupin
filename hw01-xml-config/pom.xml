@@ -4,9 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>ru.otus</groupId>
+        <artifactId>spring_home_work</artifactId>
+        <version>1.0</version>
+    </parent>
+
+
     <groupId>ru.otus.hw</groupId>
     <artifactId>hw01-xml-config</artifactId>
     <version>1.0</version>
+    <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.target>17</maven.compiler.target>
@@ -14,15 +22,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>6.0.13</spring.version>
         <opencsv.version>5.8</opencsv.version>
-        <junit.version>5.10.0</junit.version>
-        <mockito.version>5.4.0</mockito.version>
-        <assertj.version>3.24.2</assertj.version>
-        <lombok.version>1.18.30</lombok.version>
-        <checkstyle-plugin.version>3.2.2</checkstyle-plugin.version>
+        <!--<checkstyle-plugin.version>3.2.2</checkstyle-plugin.version>
         <checkstyle.version>10.11.0</checkstyle.version>
         <checkstyle.config.url>
             https://raw.githubusercontent.com/OtusTeam/Spring/master/checkstyle.xml
-        </checkstyle.config.url>
+        </checkstyle.config.url>-->
     </properties>
 
     <dependencies>
@@ -42,34 +46,6 @@
                     <artifactId>commons-collections</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-            <version>${junit.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-            <version>${mockito.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-            <version>${assertj.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-            <version>${lombok.version}</version>
         </dependency>
     </dependencies>
 
