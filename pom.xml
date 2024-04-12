@@ -12,7 +12,7 @@
 
     <modules>
         <module>hw01-xml-config</module>
-
+        <module>hw02-annotation-config</module>
     </modules>
 
     <properties>
@@ -20,7 +20,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.10.0</junit.version>
-        <mockito.version>5.4.0</mockito.version>
+        <mockito.version>5.10.0</mockito.version>
         <assertj.version>3.24.2</assertj.version>
         <lombok.version>1.18.30</lombok.version>
         <checkstyle-plugin.version>3.2.2</checkstyle-plugin.version>
@@ -43,6 +43,13 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
             <version>${mockito.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
