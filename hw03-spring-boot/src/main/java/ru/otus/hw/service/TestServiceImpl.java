@@ -9,27 +9,30 @@ import ru.otus.hw.domain.TestResult;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class TestServiceImpl implements TestService {
 
-    private final IOService ioService;
+    private final LocalizedIOService ioService;
 
     private final QuestionDao questionDao;
 
     @Override
     public TestResult executeTestFor(Student student) {
         ioService.printLine("");
-        ioService.printFormattedLine("Please answer the questions below%n");
-        final var questions = questionDao.findAll();
-        final var testResult = new TestResult(student);
+        ioService.printLineLocalized("TestService.answer.the.questions");
+        ioService.printLine("");
 
-        for (final var question : questions) {
+        var questions = questionDao.findAll();
+        var testResult = new TestResult(student);
+
+        for (var question : questions) {
             printQuestions(question);
             final var numberAnswer = Integer.parseInt(ioService.readStringWithPrompt("Select an option."));
             final var isAnswerValid = question.getAnswers().get(numberAnswer - 1).getIsCorrect();
             testResult.applyAnswer(question, isAnswerValid);
         }
+
         return testResult;
     }
 
