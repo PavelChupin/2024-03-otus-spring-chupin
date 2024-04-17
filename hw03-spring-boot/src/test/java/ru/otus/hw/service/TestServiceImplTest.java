@@ -16,8 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,7 +43,7 @@ class TestServiceImplTest {
         final TestResult expected = new TestResult(student);
         questionList.forEach(q -> expected.applyAnswer(q, true));
 
-        given(questionDao.findAll()).willReturn(questionList);
+        when(questionDao.findAll()).thenReturn(questionList);
         when(ioService.readStringWithPrompt("Select an option.")).thenReturn("1");
 
         final TestResult actual = testService.executeTestFor(student);

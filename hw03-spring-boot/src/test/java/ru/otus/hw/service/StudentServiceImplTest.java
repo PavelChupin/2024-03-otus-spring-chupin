@@ -8,14 +8,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.otus.hw.domain.Student;
 
-import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
 class StudentServiceImplTest {
 
     @Mock
-    private IOService ioService;
+    private LocalizedIOService ioService;
 
     @InjectMocks
     private StudentServiceImpl studentService;
@@ -23,10 +23,10 @@ class StudentServiceImplTest {
     @Test
     void checkException() {
         final Student expected = new Student("Chupin", "Pavel");
-        given(ioService.readStringWithPrompt("Please input your first name"))
-                .willReturn(expected.getFirstName());
-        given(ioService.readStringWithPrompt("Please input your last name"))
-                .willReturn(expected.getLastName());
+        when(ioService.readStringWithPromptLocalized("StudentService.input.first.name"))
+                .thenReturn(expected.getFirstName());
+        when(ioService.readStringWithPromptLocalized("StudentService.input.last.name"))
+                .thenReturn(expected.getLastName());
 
         final Student actual = studentService.determineCurrentStudent();
 
