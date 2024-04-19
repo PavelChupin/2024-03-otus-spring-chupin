@@ -28,7 +28,8 @@ public class TestServiceImpl implements TestService {
 
         for (var question : questions) {
             printQuestions(question);
-            final var numberAnswer = Integer.parseInt(ioService.readStringWithPrompt("Select an option."));
+            final var numberAnswer = ioService.readIntForRangeWithPromptLocalized(1, question.getAnswers().size()
+            ,"Select.option", "Incorrect.selected.option");
             final var isAnswerValid = question.getAnswers().get(numberAnswer - 1).getIsCorrect();
             testResult.applyAnswer(question, isAnswerValid);
         }

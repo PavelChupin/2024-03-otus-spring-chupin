@@ -1,13 +1,11 @@
 package ru.otus.hw.domain;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@EqualsAndHashCode
 public class TestResult {
     private final Student student;
 
