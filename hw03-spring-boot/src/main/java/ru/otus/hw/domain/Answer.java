@@ -3,12 +3,10 @@ package ru.otus.hw.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.List;
-
 @AllArgsConstructor
 @Getter
-public class Question {
+public class Answer {
     private final String text;
 
-    private final List<Answer> answers;
+    private final Boolean isCorrect;
 }
