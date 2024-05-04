@@ -8,7 +8,7 @@ import ru.otus.hw.domain.Question;
 
 import java.util.List;
 
-@SpringBootTest(properties = "spring.shell.interactive.enabled=false")
+@SpringBootTest
 public class CsvQuestionDaoTest {
 
     @Autowired

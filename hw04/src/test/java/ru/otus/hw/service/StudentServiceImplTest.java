@@ -10,7 +10,7 @@ import ru.otus.hw.domain.Student;
 import static org.mockito.Mockito.when;
 
 
-@SpringBootTest(properties = "spring.shell.interactive.enabled=false")
+@SpringBootTest
 class StudentServiceImplTest {
 
     @MockBean
