@@ -1,7 +1,6 @@
 package ru.otus.hw.repositories;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
@@ -29,9 +28,12 @@ public class JdbcGenreRepository implements GenreRepository {
     @Override
     public Optional<Genre> findById(long id) {
         final SqlParameterSource param = new MapSqlParameterSource("id", id);
-        return Optional.ofNullable(namedParameterJdbcOperations.queryForObject(" select id, name from genres where id = :id "
+        final List<Genre> genres = namedParameterJdbcOperations.query(" select id, name " +
+                        "from genres where id = :id "
                 , param
-                , new GenreRowMapper()));
+                , new GenreRowMapper());
+
+        return genres.stream().findFirst();
     }
 
     private static class GenreRowMapper implements RowMapper<Genre> {

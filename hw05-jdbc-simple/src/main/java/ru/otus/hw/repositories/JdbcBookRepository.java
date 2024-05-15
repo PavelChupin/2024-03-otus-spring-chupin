@@ -14,7 +14,6 @@ import ru.otus.hw.models.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +26,7 @@ public class JdbcBookRepository implements BookRepository {
     @Override
     public Optional<Book> findById(long id) {
         final SqlParameterSource param = new MapSqlParameterSource("id", id);
-        return Optional.ofNullable(namedParameterJdbcOperations.queryForObject(" select bk.id as book_id " +
+        final List<Book> books = namedParameterJdbcOperations.query(" select bk.id as book_id " +
                         ", bk.title     as book_title " +
                         ", ar.id        as author_id " +
                         ", ar.full_name as author_full_name " +
@@ -40,7 +39,9 @@ public class JdbcBookRepository implements BookRepository {
                         "    on ge.id = bk.genre_id " +
                         " where bk.id = :id "
                 , param
-                , new BookRowMapper()));
+                , new BookRowMapper());
+
+        return books.stream().findFirst();
     }
 
     @Override
