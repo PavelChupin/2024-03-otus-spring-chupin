@@ -22,6 +22,7 @@
         <module>hw02-annotation-config</module>
         <module>hw03-spring-boot</module>
         <module>hw04</module>
+        <module>hw05-jdbc-simple</module>
     </modules>
 
     <properties>
@@ -48,11 +49,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.shell</groupId>
-            <artifactId>spring-shell-starter</artifactId>
-            <version>${spring.shell.version}</version>
-        </dependency>
     </dependencies>
 
 </project>
