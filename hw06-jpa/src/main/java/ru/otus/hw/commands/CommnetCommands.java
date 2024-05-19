@@ -1,15 +1,11 @@
 package ru.otus.hw.commands;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.sql.ast.tree.cte.CteSearchClauseKind;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import org.springframework.stereotype.Component;
 import ru.otus.hw.converters.CommentConverter;
-import ru.otus.hw.converters.GenreConverter;
 import ru.otus.hw.models.Comment;
 import ru.otus.hw.services.CommentService;
-import ru.otus.hw.services.GenreService;
 
 import java.util.stream.Collectors;
 
