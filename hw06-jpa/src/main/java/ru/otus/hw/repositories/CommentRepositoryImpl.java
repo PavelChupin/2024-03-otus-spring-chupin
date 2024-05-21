@@ -43,7 +43,7 @@ public class CommentRepositoryImpl implements CommentRepository {
     }
 
     @Override
-    public void delete(long id) {
+    public void deleteById(long id) {
         final Query query = em.createQuery("delete from Comment where id =: id");
         query.setParameter("id", id);
         query.executeUpdate();

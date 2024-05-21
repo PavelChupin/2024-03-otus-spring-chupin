@@ -25,8 +25,8 @@ public class CommnetCommands {
     }
 
     @ShellMethod(value = "Add comment by book id.", key = "cmad")
-    public String insertCommentBook(long bookId, String text) {
-        final Comment comment = commentService.insertCommentBook(bookId, text);
+    public String addCommentBook(long bookId, String text) {
+        final Comment comment = commentService.addCommentBook(bookId, text);
         return commentConverter.commentToString(comment);
     }
 

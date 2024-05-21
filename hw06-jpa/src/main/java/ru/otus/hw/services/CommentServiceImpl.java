@@ -28,7 +28,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void deleteById(long id) {
-        commentRepository.delete(id);
+        commentRepository.deleteById(id);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public Comment insertCommentBook(long bookId, String text) {
+    public Comment addCommentBook(long bookId, String text) {
         final Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(bookId)));
         final Comment comment = new Comment();
