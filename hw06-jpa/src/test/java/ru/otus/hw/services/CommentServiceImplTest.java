@@ -63,6 +63,7 @@ class CommentServiceImplTest {
         final Comment actual = commentService.updateById(expected.getId(), expected.getComment());
 
         assertThat(actual).isEqualTo(expected);
+        assertThat(actual.getComment()).isEqualTo(expected.getComment());
     }
 
     @DisplayName("Должен добавить комментарий для книги")
@@ -77,6 +78,14 @@ class CommentServiceImplTest {
         final List<Comment> actual = commentRepository.findAllByBookId(book.getId());
 
         assertThat(actual).isEqualTo(expected);
+        actual.forEach(at ->
+        {
+            final Comment comment = expected.stream()
+                    .filter(ex -> ex.getId() == at.getId())
+                    .findFirst().get();
+
+            assertThat(at.getComment()).isEqualTo(comment.getComment());
+        });
     }
 
     private Book getBook() {

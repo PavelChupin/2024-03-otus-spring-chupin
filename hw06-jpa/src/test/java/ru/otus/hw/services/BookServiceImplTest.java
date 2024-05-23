@@ -55,7 +55,6 @@ class BookServiceImplTest {
         final Optional<Book> actual = bookService.findById(expected.getId());
 
         assertThat(actual).isPresent().get().isEqualTo(expected);
-        actual.ifPresent(value -> assertThat(value.getTitle()).isEqualTo(expected.getTitle()));
     }
 
     @DisplayName("Должен вернуть все книги")
