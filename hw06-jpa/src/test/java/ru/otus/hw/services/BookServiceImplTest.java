@@ -1,5 +1,6 @@
 package ru.otus.hw.services;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +36,26 @@ class BookServiceImplTest {
     @Autowired
     private BookServiceImpl bookService;
 
+    private static Book book;
+
+    @BeforeAll
+    static void setUp() {
+        book = new Book();
+        book.setId(1);
+        book.setTitle("BookTitle_1");
+        book.setAuthor(new Author(1, "Author_1"));
+        book.setGenre(new Genre(1, "Genre_1"));
+    }
+
     @DisplayName("Должен вернуть книгу по id")
+    //@DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     void findById() {
-        final Book expected = getBook();
+        final Book expected = book;
         final Optional<Book> actual = bookService.findById(expected.getId());
 
         assertThat(actual).isPresent().get().isEqualTo(expected);
+        actual.ifPresent(value -> assertThat(value.getTitle()).isEqualTo(expected.getTitle()));
     }
 
     @DisplayName("Должен вернуть все книги")
@@ -51,20 +65,38 @@ class BookServiceImplTest {
         final List<Book> actual = bookService.findAll();
 
         assertThat(actual).isEqualTo(expected);
+        actual.forEach(at ->
+                {
+                    final Book book = expected.stream()
+                            .filter(ex -> ex.getId() == at.getId())
+                            .findFirst().get();
+
+                    assertThat(at.getTitle()).isEqualTo(book.getTitle());
+                    assertThat(at.getGenre()).isEqualTo(book.getGenre());
+                    assertThat(at.getAuthor()).isEqualTo(book.getAuthor());
+                }
+        );
     }
 
     @DisplayName("Должен обновить книгу")
     @Test
     void update() {
         final String title = "NewTitle";
-        final Book expected = getBook();
+        final Book expected = book;
         expected.setTitle(title);
-        final Book actual = bookService.update(expected.getId(), expected.getTitle(), expected.getAuthor().getId(), expected.getGenre().getId());
+        final Book actual = bookService.update(expected.getId()
+                , expected.getTitle()
+                , expected.getAuthor().getId()
+                , expected.getGenre().getId()
+        );
 
         assertThat(actual).isEqualTo(expected);
+        assertThat(actual.getTitle()).isEqualTo(expected.getTitle());
+        assertThat(actual.getAuthor()).isEqualTo(expected.getAuthor());
+        assertThat(actual.getGenre()).isEqualTo(expected.getGenre());
     }
 
-    @DisplayName("Должен добавил новую книгу")
+    @DisplayName("Должен добавить новую книгу")
     @Test
     void insert() {
         final Author author = authorRepository.findAll().get(0);
@@ -75,6 +107,8 @@ class BookServiceImplTest {
         final Optional<Book> actual = bookRepository.findById(expected.getId());
 
         assertThat(actual).isPresent().get().isEqualTo(expected);
+        actual.ifPresent(value ->
+                assertThat(actual.get().getTitle()).isEqualTo(expected.getTitle()));
     }
 
     @DisplayName("Должен удалить книгу по id")
@@ -88,10 +122,5 @@ class BookServiceImplTest {
         final List<Book> actual = bookRepository.findAll();
 
         assertThat(actual).isEqualTo(expected);
-    }
-
-
-    private Book getBook() {
-        return bookRepository.findAll().get(0);
     }
 }

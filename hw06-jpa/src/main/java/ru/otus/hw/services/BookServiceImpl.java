@@ -27,6 +27,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Book> findAll() {
         return bookRepository.findAll();
     }
@@ -50,12 +51,17 @@ public class BookServiceImpl implements BookService {
     }
 
     private Book save(long id, String title, long authorId, long genreId) {
-        var author = authorRepository.findById(authorId)
+        final var author = authorRepository.findById(authorId)
                 .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
-        var genre = genreRepository.findById(genreId)
+        final var genre = genreRepository.findById(genreId)
                 .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(genreId)));
-        var book = new Book();
-        book.setId(id);
+
+        final var book = bookRepository.findById(id).orElseGet(() -> {
+            Book bk = new Book();
+            bk.setId(id);
+            return bk;
+        });
+
         book.setAuthor(author);
         book.setTitle(title);
         book.setGenre(genre);

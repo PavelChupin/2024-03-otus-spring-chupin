@@ -1,20 +1,24 @@
 package ru.otus.hw.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Column;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import lombok.Data;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
-@Data
 @NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode(of = {"id"})
+@ToString(of = {"id", "comment"})
 @Entity
 @Table(name = "comments")
 public class Comment {
@@ -26,7 +30,5 @@ public class Comment {
     private String comment;
 
     @ManyToOne(targetEntity = Book.class, fetch = FetchType.LAZY)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     private Book book;
 }
