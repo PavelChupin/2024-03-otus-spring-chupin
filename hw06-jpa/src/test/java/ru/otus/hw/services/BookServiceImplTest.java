@@ -55,7 +55,9 @@ class BookServiceImplTest {
         final Optional<Book> actual = bookService.findById(expected.getId());
 
         assertThat(actual).isPresent().get().isEqualTo(expected);
-        Book bk = actual.get();
+
+        final Book bk = actual.get();
+
         assertThat(bk.getAuthor()).isEqualTo(expected.getAuthor());
         assertThat(bk.getGenre()).isEqualTo(expected.getGenre());
     }
@@ -109,8 +111,12 @@ class BookServiceImplTest {
         final Optional<Book> actual = bookRepository.findById(expected.getId());
 
         assertThat(actual).isPresent().get().isEqualTo(expected);
-        actual.ifPresent(value ->
-                assertThat(actual.get().getTitle()).isEqualTo(expected.getTitle()));
+
+        final Book bk = actual.get();
+
+        assertThat(bk.getTitle()).isEqualTo(expected.getTitle());
+        assertThat(bk.getAuthor()).isEqualTo(expected.getAuthor());
+        assertThat(bk.getGenre()).isEqualTo(expected.getGenre());
     }
 
     @DisplayName("Должен удалить книгу по id")
