@@ -23,6 +23,7 @@
         <module>hw03-spring-boot</module>
         <module>hw04</module>
         <module>hw05-jdbc-simple</module>
+        <module>hw06-jpa</module>
     </modules>
 
     <properties>
