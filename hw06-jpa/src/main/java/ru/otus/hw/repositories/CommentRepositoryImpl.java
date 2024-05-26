@@ -6,6 +6,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 
 import java.util.List;
@@ -44,8 +45,15 @@ public class CommentRepositoryImpl implements CommentRepository {
 
     @Override
     public void deleteById(long id) {
-        final Query query = em.createQuery("delete from Comment where id =: id");
-        query.setParameter("id", id);
-        query.executeUpdate();
+        // Мой старый вариант
+//        final Query query = em.createQuery("delete from Comment where id =: id");
+//        query.setParameter("id", id);
+//        query.executeUpdate();
+
+        // Предложенный вариант на ревью
+        final Comment comment = em.find(Comment.class, id);
+        if (comment != null) {
+            em.remove(comment);
+        }
     }
 }

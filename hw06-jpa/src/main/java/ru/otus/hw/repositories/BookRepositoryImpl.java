@@ -50,10 +50,14 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public void deleteById(long id) {
+        // Старый вариант
 //        final Query query = em.createQuery("delete from Book where id =:id");
 //        query.setParameter("id", id);
 //        query.executeUpdate();
+        // Предложенный на ревью
         final Book book = em.find(Book.class, id);
-        em.remove(book);
+        if (book != null) {
+            em.remove(book);
+        }
     }
 }
