@@ -60,6 +60,7 @@ class BookServiceImplTest {
 
         final Book bk = actual.get();
 
+        assertThat(bk.getTitle()).isEqualTo(expected.getTitle());
         assertThat(bk.getAuthor()).isEqualTo(expected.getAuthor());
         assertThat(bk.getAuthor().getFullName()).isEqualTo(expected.getAuthor().getFullName());
         assertThat(bk.getGenre()).isEqualTo(expected.getGenre());
