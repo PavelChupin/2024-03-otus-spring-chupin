@@ -22,7 +22,12 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
 
     @Override
-    public Optional<Book> findById(long id) {
+    @Transactional(readOnly = true)
+    public Optional<Book> findById(Long id) {
+        if (id.equals(0L)) {
+            throw new EntityNotFoundException("Incorrect book id %d passed".formatted(id));
+        }
+
         return bookRepository.findById(id);
     }
 
@@ -34,7 +39,15 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public Book insert(String title, long authorId, long genreId) {
+    public Book create(String title, Long authorId, Long genreId) {
+        if (authorId.equals(0L)) {
+            throw new EntityNotFoundException("Incorrect author id %d passed".formatted(authorId));
+        }
+
+        if (genreId.equals(0L)) {
+            throw new EntityNotFoundException("Incorrect genre id %d passed".formatted(genreId));
+        }
+
         final var author = authorRepository.findById(authorId)
                 .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
         final var genre = genreRepository.findById(genreId)
@@ -49,9 +62,17 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public Book update(long id, String title, long authorId, long genreId) {
-        if (id == 0L) {
+    public Book update(Long id, String title, Long authorId, Long genreId) {
+        if (id.equals(0L)) {
             throw new EntityNotFoundException("Incorrect book id %d passed".formatted(id));
+        }
+
+        if (authorId.equals(0L)) {
+            throw new EntityNotFoundException("Incorrect author id %d passed".formatted(id));
+        }
+
+        if (genreId.equals(0L)) {
+            throw new EntityNotFoundException("Incorrect genre id %d passed".formatted(id));
         }
 
         final var author = authorRepository.findById(authorId)
@@ -61,7 +82,6 @@ public class BookServiceImpl implements BookService {
 
         final var book = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
-
         book.setTitle(title);
         book.setAuthor(author);
         book.setGenre(genre);
@@ -70,7 +90,11 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
+        if (id.equals(0L)) {
+            throw new EntityNotFoundException("Incorrect book id %d passed".formatted(id));
+        }
+
         bookRepository.deleteById(id);
     }
 }
