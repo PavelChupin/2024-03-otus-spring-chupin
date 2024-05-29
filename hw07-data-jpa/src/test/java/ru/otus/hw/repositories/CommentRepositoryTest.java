@@ -26,7 +26,7 @@ class CommentRepositoryTest {
 
     @DisplayName("Должен искать комментарии для книги")
     @Test
-    void findAllByBookId() {
+    void findAllByBookIdTest() {
         final TypedQuery<Comment> queryComment = em.getEntityManager()
                 .createQuery("select cm from Comment cm where cm.book.id = :id", Comment.class);
         queryComment.setParameter("id", BOOK_ID);

@@ -52,7 +52,7 @@ class BookServiceImplTest {
     @DisplayName("Должен вернуть книгу по id")
     //@DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
-    void findById() {
+    void findByIdTest() {
         final Book expected = book;
         final Optional<Book> actual = bookService.findById(expected.getId());
 
@@ -69,13 +69,13 @@ class BookServiceImplTest {
 
     @DisplayName("кинуть исключение на переданный id = 0 книги при ее поиске")
     @Test
-    void findByIdThrow() {
+    void findByIdThrowTest() {
         assertThatThrownBy(() -> bookService.findById(0L)).isExactlyInstanceOf(EntityNotFoundException.class);
     }
 
     @DisplayName("Должен вернуть все книги")
     @Test
-    void findAll() {
+    void findAllTest() {
         final List<Book> expected = bookRepository.findAll();
         final List<Book> actual = bookService.findAll();
 
@@ -97,7 +97,7 @@ class BookServiceImplTest {
 
     @DisplayName("Должен обновить книгу")
     @Test
-    void update() {
+    void updateTest() {
         final String title = "NewTitle";
         final Book expected = book;
         expected.setTitle(title);
@@ -115,7 +115,7 @@ class BookServiceImplTest {
 
     @DisplayName("Должен кинуть исключение на переданный id = 0 книги, автора или жанра при обновлении книги")
     @Test
-    void updateByIdThrow() {
+    void updateByIdThrowTest() {
         assertThatThrownBy(() -> bookService.update(0L, "", 1L, 1L))
                 .isExactlyInstanceOf(EntityNotFoundException.class);
         assertThatThrownBy(() -> bookService.update(1L, "", 0L, 1L))
@@ -126,11 +126,11 @@ class BookServiceImplTest {
 
     @DisplayName("Должен добавить новую книгу")
     @Test
-    void insert() {
+    void createTest() {
         final Author author = authorRepository.findAll().get(0);
         final Genre genre = genreRepository.findAll().get(0);
         final String title = "NewTitle";
-        final Book expected = bookService.insert(title, author.getId(), genre.getId());
+        final Book expected = bookService.create(title, author.getId(), genre.getId());
 
         final Optional<Book> actual = bookRepository.findById(expected.getId());
 
@@ -145,16 +145,16 @@ class BookServiceImplTest {
 
     @DisplayName("Должен кинуть исключение на переданный id = 0 автора или жанра при добавлении книги")
     @Test
-    void insertByIdThrow() {
-        assertThatThrownBy(() -> bookService.insert("", 0L, 1L))
+    void createByIdThrowTest() {
+        assertThatThrownBy(() -> bookService.create("", 0L, 1L))
                 .isExactlyInstanceOf(EntityNotFoundException.class);
-        assertThatThrownBy(() -> bookService.insert("", 1L, 0L))
+        assertThatThrownBy(() -> bookService.create("", 1L, 0L))
                 .isExactlyInstanceOf(EntityNotFoundException.class);
     }
 
     @DisplayName("Должен удалить книгу по id")
     @Test
-    void deleteById() {
+    void deleteByIdTest() {
         final List<Book> expected = bookRepository.findAll();
 
         bookService.deleteById(expected.get(0).getId());
@@ -167,7 +167,7 @@ class BookServiceImplTest {
 
     @DisplayName("Должен кинуть исключение на переданный id = 0 книги при удалении книги")
     @Test
-    void deleteByIdThrow() {
+    void deleteByIdThrowTest() {
         assertThatThrownBy(() -> bookService.deleteById(0L)).isExactlyInstanceOf(EntityNotFoundException.class);
     }
 }

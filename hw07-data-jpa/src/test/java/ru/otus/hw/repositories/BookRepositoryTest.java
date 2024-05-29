@@ -31,7 +31,7 @@ class BookRepositoryTest {
 
     @DisplayName("Должен вернуть книгу по id")
     @Test
-    void findById() {
+    void findByIdTest() {
         final EntityGraph<?> entityGraph = em.getEntityManager().getEntityGraph("otus-book-lazy-entity-graph");
         final Map<String, Object> properties = new HashMap<>();
         properties.put("jakarta.persistence.fetchgraph", entityGraph);
@@ -49,7 +49,7 @@ class BookRepositoryTest {
 
     @DisplayName("Должен вернуть все книги")
     @Test
-    void findAll() {
+    void findAllTest() {
         final TypedQuery<Book> query = em.getEntityManager()
                 .createQuery("select bk from Book bk", Book.class);
         final EntityGraph<?> entityGraph = em.getEntityManager()

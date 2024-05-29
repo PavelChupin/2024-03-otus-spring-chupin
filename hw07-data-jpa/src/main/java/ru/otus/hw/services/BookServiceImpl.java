@@ -39,7 +39,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public Book insert(String title, Long authorId, Long genreId) {
+    public Book create(String title, Long authorId, Long genreId) {
         if (authorId.equals(0L)) {
             throw new EntityNotFoundException("Incorrect author id %d passed".formatted(authorId));
         }

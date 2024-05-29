@@ -33,7 +33,7 @@ class CommentServiceImplTest {
 
     @DisplayName("Должен вернуть все комментарии по id книги")
     @Test
-    void findAllByBookId() {
+    void findAllByBookIdTest() {
         final Book book = getBook();
         final List<Comment> expected = commentRepository.findAllByBookId(book.getId());
         final List<Comment> actual = commentService.findAllByBookId(book.getId());
@@ -51,13 +51,13 @@ class CommentServiceImplTest {
 
     @DisplayName("Должен вернуть ошибку если передан 0 id книги")
     @Test
-    void findAllByBookIdThrow() {
+    void findAllByBookIdThrowTest() {
         assertThatThrownBy(() -> commentService.findAllByBookId(0L)).isExactlyInstanceOf(EntityNotFoundException.class);
     }
 
     @DisplayName("Должен удалить комментарий по id")
     @Test
-    void deleteById() {
+    void deleteByIdTest() {
         final Book book = getBook();
         final List<Comment> expected = commentRepository.findAllByBookId(book.getId());
 
@@ -70,13 +70,13 @@ class CommentServiceImplTest {
 
     @DisplayName("Должен кинуть исключение на переданный 0 id при удалении комментария")
     @Test
-    void deleteByIdThrow() {
+    void deleteByIdThrowTest() {
         assertThatThrownBy(() -> commentService.deleteById(0L)).isExactlyInstanceOf(EntityNotFoundException.class);
     }
 
     @DisplayName("Должен обновить комментарий по id")
     @Test
-    void updateById() {
+    void updateByIdTest() {
         final String comment = "NewComment";
         final Book book = getBook();
         final Comment expected = commentRepository.findAllByBookId(book.getId()).get(0);
@@ -90,14 +90,14 @@ class CommentServiceImplTest {
 
     @DisplayName("Должен кинуть исключение на переданный 0 id при обновлении комментария")
     @Test
-    void updateByIdThrow() {
+    void updateByIdThrowTest() {
         assertThatThrownBy(() -> commentService.updateById(0L, ""))
                 .isExactlyInstanceOf(EntityNotFoundException.class);
     }
 
     @DisplayName("Должен добавить комментарий для книги")
     @Test
-    void addCommentBook() {
+    void addCommentBookTest() {
         final Book book = getBook();
         final List<Comment> expected = commentRepository.findAllByBookId(book.getId());
 
@@ -119,7 +119,7 @@ class CommentServiceImplTest {
 
     @DisplayName("Должен добавить комментарий для книги")
     @Test
-    void addCommentBookThrow() {
+    void addCommentBookThrowTest() {
         assertThatThrownBy(() -> commentService.addCommentBook(0L, "")).isExactlyInstanceOf(EntityNotFoundException.class);
     }
 
