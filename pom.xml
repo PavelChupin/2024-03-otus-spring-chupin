@@ -25,6 +25,7 @@
         <module>hw05-jdbc-simple</module>
         <module>hw06-jpa</module>
         <module>hw07-data-jpa</module>
+        <module>hw08-nosql-mongodb</module>
     </modules>
 
     <properties>
@@ -50,7 +51,5 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
-
     </dependencies>
-
 </project>
