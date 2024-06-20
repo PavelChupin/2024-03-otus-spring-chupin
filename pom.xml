@@ -22,16 +22,16 @@
         <module>hw02-annotation-config</module>
         <module>hw03-spring-boot</module>
         <module>hw04</module>
-        <module>hw05-jdbc-simple</module>
+       <module>hw05-jdbc-simple</module>
         <module>hw06-jpa</module>
         <module>hw07-data-jpa</module>
+        <module>hw09-mvc</module>
     </modules>
 
     <properties>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.shell.version>3.2.1</spring.shell.version>
         <checkstyle-plugin.version>3.2.2</checkstyle-plugin.version>
         <checkstyle.version>10.11.0</checkstyle.version>
         <checkstyle.config.url>
