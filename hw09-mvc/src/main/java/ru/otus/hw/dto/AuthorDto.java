@@ -10,6 +10,8 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode(of = {"id"})
 public class AuthorDto {
+
     private Long id;
+
     private String fullName;
 }

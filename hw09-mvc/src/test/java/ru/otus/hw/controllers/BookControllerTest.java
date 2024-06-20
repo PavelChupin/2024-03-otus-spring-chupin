@@ -1,18 +1,15 @@
 package ru.otus.hw.controllers;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.GenreDto;
-import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -22,10 +19,12 @@ import ru.otus.hw.services.GenreService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -34,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class BookControllerTest {
 
     @Autowired
-    private MockMvc mvc;
+    private MockMvc mockMvc;
 
     @MockBean
     private BookService bookService;
@@ -65,8 +64,10 @@ class BookControllerTest {
         when(bookService.findAll()).thenReturn(books);
         when(genreService.findAll()).thenReturn(genres);
         when(authorService.findAll()).thenReturn(authors);
+        when(bookService.findById(1L)).thenReturn(Optional.of(books.get(0)));
     }
 
+    @DisplayName("Должен вернуть страницу списка книг")
     @Test
     void listBooksPage() throws Exception {
         mock();
@@ -74,12 +75,13 @@ class BookControllerTest {
                 .map(this::getBookDtoByBook)
                 .collect(Collectors.toList());
 
-        mvc.perform(get("/list"))
+        mockMvc.perform(get("/list"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("list"))
                 .andExpect(model().attribute("books", bookDtos));
     }
 
+    @DisplayName("Должен вернуть страницу добавления книги")
     @Test
     void createBookPage() throws Exception {
         mock();
@@ -90,13 +92,14 @@ class BookControllerTest {
                 .map(this::getAuthorDtoByAuthor)
                 .collect(Collectors.toList());
 
-        mvc.perform(get("/create"))
+        mockMvc.perform(get("/create"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("create"))
                 .andExpect(model().attribute("genres", genreDtos))
                 .andExpect(model().attribute("authors", authorDtos));
     }
 
+    @DisplayName("Должен вернуть страницу редактирования книги")
     @Test
     void editPage() throws Exception {
         mock();
@@ -108,7 +111,7 @@ class BookControllerTest {
                 .map(this::getAuthorDtoByAuthor)
                 .collect(Collectors.toList());
 
-        mvc.perform(get("/edit").param("id", books.get(0).getId().toString()))
+        mockMvc.perform(get("/edit").param("id", bookDto.getId().toString()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("edit"))
                 .andExpect(model().attribute("genres", genreDtos))
@@ -116,47 +119,68 @@ class BookControllerTest {
                 .andExpect(model().attribute("book", bookDto));
     }
 
-//    @GetMapping("/edit")
-//    public String editPage(@RequestParam("id") Long id, Model model) {
-//        final Book book = bookService.findById(id).orElseThrow(NotFoundException::new);
-//        final BookDto bookDto = getBookDtoByBook(book);
-//        final List<GenreDto> genreDtos = genreService.findAll().stream()
-//                .map(this::getGenreDtoByGenre)
-//                .collect(Collectors.toList());
-//        final List<AuthorDto> authorDtos = authorService.findAll().stream()
-//                .map(this::getAuthorDtoByAuthor)
-//                .collect(Collectors.toList());
-//
-//        model.addAttribute("book", bookDto);
-//        model.addAttribute("genres", genreDtos);
-//        model.addAttribute("authors", authorDtos);
-//        return "edit";
-//    }
-
+    @DisplayName("Должен вернуть страницу удаления книги")
     @Test
-    void deletePage() {
+    void deletePage() throws Exception {
+        mock();
+        final BookDto bookDto = getBookDtoByBook(books.get(0));
+
+        mockMvc.perform(get("/delete").param("id", bookDto.getId().toString()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("delete"))
+                .andExpect(model().attribute("book", bookDto));
     }
 
-    //    @GetMapping("/delete")
-//    public String deletePage(@RequestParam("id") Long id, Model model) {
-//        final Book book = bookService.findById(id).orElseThrow(NotFoundException::new);
-//        final BookDto bookDto = getBookDtoByBook(book);
-//
-//        model.addAttribute("book", bookDto);
-//        return "delete";
-//    }
-
+    @DisplayName("Должен изменить книгу")
     @Test
-    void editBook() {
+    void editBook() throws Exception {
+        final BookDto bookDto = getBookDtoByBook(books.get(0));
+
+        when(bookService.update(bookDto.getId(), bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId()))
+                .thenReturn(books.get(0));
+
+        mockMvc.perform(post("/edit")
+                .param("id", bookDto.getId().toString())
+                .param("title", bookDto.getTitle())
+                .param("authorId", bookDto.getAuthorId().toString())
+                .param("genreId", bookDto.getGenreId().toString())
+        )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/list"));
     }
 
-
+    @DisplayName("Должен удалить книгу")
     @Test
-    void deleteBook() {
+    void deleteBook() throws Exception {
+        final BookDto bookDto = getBookDtoByBook(books.get(0));
+
+        mockMvc.perform(post("/delete")
+                .param("id", bookDto.getId().toString())
+                .param("title", bookDto.getTitle())
+                .param("authorId", bookDto.getAuthorId().toString())
+                .param("genreId", bookDto.getGenreId().toString())
+        )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/list"));
     }
 
+    @DisplayName("Должен добавить книгу")
     @Test
-    void createBook() {
+    void createBook() throws Exception {
+        final BookDto bookDto = getBookDtoByBook(books.get(0));
+
+        when(bookService.create(bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId()))
+                .thenReturn(books.get(0));
+
+        mockMvc.perform(post("/edit")
+                .param("title", bookDto.getTitle())
+                .param("authorId", bookDto.getAuthorId().toString())
+                .param("genreId", bookDto.getGenreId().toString())
+        )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/list"));
+
+
     }
 
     private BookDto getBookDtoByBook(Book book) {

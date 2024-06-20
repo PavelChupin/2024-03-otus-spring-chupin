@@ -25,7 +25,9 @@ import java.util.stream.Collectors;
 public class BookController {
 
     private final BookService bookService;
+
     private final GenreService genreService;
+
     private final AuthorService authorService;
 
     @GetMapping("/list")
