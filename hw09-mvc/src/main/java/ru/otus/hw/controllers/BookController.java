@@ -1,13 +1,17 @@
 package ru.otus.hw.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.hw.dto.AuthorDto;
+import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.dto.BookUpdateDto;
 import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.models.Author;
@@ -40,7 +44,7 @@ public class BookController {
         return "list";
     }
 
-    @GetMapping("/create")
+    @GetMapping("/create/book")
     public String createBookPage(Model model) {
         final List<GenreDto> genreDtos = genreService.findAll().stream()
                 .map(this::getGenreDtoByGenre)
@@ -53,8 +57,8 @@ public class BookController {
         return "create";
     }
 
-    @GetMapping("/edit")
-    public String editPage(@RequestParam("id") Long id, Model model) {
+    @GetMapping("/edit/book/{id}")
+    public String editPage(@PathVariable("id") Long id, Model model) {
         final Book book = bookService.findById(id).orElseThrow(NotFoundException::new);
         final BookDto bookDto = getBookDtoByBook(book);
         final List<GenreDto> genreDtos = genreService.findAll().stream()
@@ -70,8 +74,8 @@ public class BookController {
         return "edit";
     }
 
-    @GetMapping("/delete")
-    public String deletePage(@RequestParam("id") Long id, Model model) {
+    @GetMapping("/delete/book/{id}")
+    public String deletePage(@PathVariable("id") Long id, Model model) {
         final Book book = bookService.findById(id).orElseThrow(NotFoundException::new);
         final BookDto bookDto = getBookDtoByBook(book);
 
@@ -79,21 +83,28 @@ public class BookController {
         return "delete";
     }
 
-    @PostMapping("/edit")
-    public String editBook(BookDto bookDto) {
-        bookService.update(bookDto.getId(), bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId());
+    @PostMapping("/edit/book/{id}")
+    public String editBook(@Valid BookUpdateDto bookUpdateDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()){
+            return String.format("redirect:/edit/book/%d", bookUpdateDto.getId());
+        }
+
+        bookService.update(bookUpdateDto.getId(), bookUpdateDto.getTitle(), bookUpdateDto.getAuthorId(), bookUpdateDto.getGenreId());
         return "redirect:/list";
     }
 
-    @PostMapping("/delete")
-    public String deleteBook(BookDto bookDto) {
-        bookService.deleteById(bookDto.getId());
+    @PostMapping("/delete/book/{id}")
+    public String deleteBook(@PathVariable("id") Long id) {
+        bookService.deleteById(id);
         return "redirect:/list";
     }
 
-    @PostMapping("/create")
-    public String createBook(BookDto bookDto) {
-        bookService.create(bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId());
+    @PostMapping("/create/book")
+    public String createBook(@Valid BookCreateDto bookCreateDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()){
+            return "redirect:/create/book";
+        }
+        bookService.create(bookCreateDto.getTitle(), bookCreateDto.getAuthorId(), bookCreateDto.getGenreId());
         return "redirect:/list";
     }
 
@@ -101,10 +112,14 @@ public class BookController {
         final BookDto bookDto = new BookDto();
         bookDto.setId(book.getId());
         bookDto.setTitle(book.getTitle());
-        bookDto.setAuthorId(book.getAuthor().getId());
-        bookDto.setAuthorName(book.getAuthor().getFullName());
-        bookDto.setGenreId(book.getGenre().getId());
-        bookDto.setGenreName(book.getGenre().getName());
+        final AuthorDto authorDto = new AuthorDto();
+        authorDto.setId(book.getAuthor().getId());
+        authorDto.setFullName(book.getAuthor().getFullName());
+        bookDto.setAuthorDto(authorDto);
+        final GenreDto genreDto = new GenreDto();
+        genreDto.setId(book.getGenre().getId());
+        genreDto.setName(book.getGenre().getName());
+        bookDto.setGenreDto(genreDto);
 
         return bookDto;
     }

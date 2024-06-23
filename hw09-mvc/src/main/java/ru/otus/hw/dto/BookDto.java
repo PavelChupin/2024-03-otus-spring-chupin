@@ -15,11 +15,7 @@ public class BookDto {
 
     private String title;
 
-    private Long authorId;
+    private AuthorDto authorDto;
 
-    private String authorName;
-
-    private Long genreId;
-
-    private String genreName;
+    private GenreDto genreDto;
 }
