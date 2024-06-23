@@ -85,7 +85,7 @@ public class BookController {
 
     @PostMapping("/edit/book/{id}")
     public String editBook(@Valid BookUpdateDto bookUpdateDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             return String.format("redirect:/edit/book/%d", bookUpdateDto.getId());
         }
 
@@ -101,7 +101,7 @@ public class BookController {
 
     @PostMapping("/create/book")
     public String createBook(@Valid BookCreateDto bookCreateDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             return "redirect:/create/book";
         }
         bookService.create(bookCreateDto.getTitle(), bookCreateDto.getAuthorId(), bookCreateDto.getGenreId());
