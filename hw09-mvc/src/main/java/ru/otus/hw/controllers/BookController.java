@@ -89,7 +89,11 @@ public class BookController {
             return String.format("redirect:/edit/book/%d", bookUpdateDto.getId());
         }
 
-        bookService.update(bookUpdateDto.getId(), bookUpdateDto.getTitle(), bookUpdateDto.getAuthorId(), bookUpdateDto.getGenreId());
+        bookService.update(bookUpdateDto.getId()
+                , bookUpdateDto.getTitle()
+                , bookUpdateDto.getAuthorId()
+                , bookUpdateDto.getGenreId());
+
         return "redirect:/list";
     }
 
