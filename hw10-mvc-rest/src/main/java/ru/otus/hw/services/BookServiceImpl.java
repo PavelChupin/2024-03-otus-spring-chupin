@@ -3,6 +3,11 @@ package ru.otus.hw.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.hw.dto.AuthorDto;
+import ru.otus.hw.dto.BookCreateDto;
+import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.dto.BookUpdateDto;
+import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.AuthorRepository;
@@ -10,7 +15,7 @@ import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -23,69 +28,72 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Book> findById(Long id) {
+    public BookDto findById(Long id) {
         if (id.equals(0L)) {
             throw new EntityNotFoundException("Incorrect book id %d passed".formatted(id));
         }
 
-        return bookRepository.findById(id);
+        return bookToDto(bookRepository.findById(id).get());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Book> findAll() {
-        return bookRepository.findAll();
+    public List<BookDto> findAll() {
+        return bookRepository.findAll().stream()
+                .map(this::bookToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public Book create(String title, Long authorId, Long genreId) {
-        if (authorId.equals(0L)) {
-            throw new EntityNotFoundException("Incorrect author id %d passed".formatted(authorId));
+    public BookDto create(BookCreateDto bookCreateDto) {
+        if (bookCreateDto.getAuthorId().equals(0L)) {
+            throw new EntityNotFoundException("Incorrect author id %d passed".formatted(bookCreateDto.getAuthorId()));
         }
 
-        if (genreId.equals(0L)) {
-            throw new EntityNotFoundException("Incorrect genre id %d passed".formatted(genreId));
+        if (bookCreateDto.getGenreId().equals(0L)) {
+            throw new EntityNotFoundException("Incorrect genre id %d passed".formatted(bookCreateDto.getGenreId()));
         }
 
-        final var author = authorRepository.findById(authorId)
-                .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
-        final var genre = genreRepository.findById(genreId)
-                .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(genreId)));
+        final var author = authorRepository.findById(bookCreateDto.getAuthorId())
+                .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found"
+                        .formatted(bookCreateDto.getAuthorId())));
+        final var genre = genreRepository.findById(bookCreateDto.getGenreId())
+                .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found"
+                        .formatted(bookCreateDto.getGenreId())));
 
         final var book = new Book();
-        book.setTitle(title);
+        book.setTitle(bookCreateDto.getTitle());
         book.setAuthor(author);
         book.setGenre(genre);
-        return bookRepository.save(book);
+        return bookToDto(bookRepository.save(book));
     }
 
     @Override
     @Transactional
-    public Book update(Long id, String title, Long authorId, Long genreId) {
-        if (id.equals(0L)) {
-            throw new EntityNotFoundException("Incorrect book id %d passed".formatted(id));
+    public BookDto update(BookUpdateDto bookUpdateDto) {
+        if (bookUpdateDto.getId().equals(0L)) {
+            throw new EntityNotFoundException("Incorrect book id %d passed".formatted(bookUpdateDto.getId()));
         }
-
-        if (authorId.equals(0L)) {
-            throw new EntityNotFoundException("Incorrect author id %d passed".formatted(id));
+        if (bookUpdateDto.getAuthorId().equals(0L)) {
+            throw new EntityNotFoundException("Incorrect author id %d passed".formatted(bookUpdateDto.getAuthorId()));
         }
-
-        if (genreId.equals(0L)) {
-            throw new EntityNotFoundException("Incorrect genre id %d passed".formatted(id));
+        if (bookUpdateDto.getGenreId().equals(0L)) {
+            throw new EntityNotFoundException("Incorrect genre id %d passed".formatted(bookUpdateDto.getGenreId()));
         }
-
-        final var author = authorRepository.findById(authorId)
-                .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
-        final var genre = genreRepository.findById(genreId)
-                .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(genreId)));
-
-        final var book = bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
-        book.setTitle(title);
+        final var author = authorRepository.findById(bookUpdateDto.getAuthorId())
+                .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found"
+                        .formatted(bookUpdateDto.getAuthorId())));
+        final var genre = genreRepository.findById(bookUpdateDto.getGenreId())
+                .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found"
+                        .formatted(bookUpdateDto.getGenreId())));
+        final var book = bookRepository.findById(bookUpdateDto.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found"
+                        .formatted(bookUpdateDto.getId())));
+        book.setTitle(bookUpdateDto.getTitle());
         book.setAuthor(author);
         book.setGenre(genre);
-        return bookRepository.save(book);
+        return bookToDto(bookRepository.save(book));
     }
 
     @Override
@@ -96,5 +104,21 @@ public class BookServiceImpl implements BookService {
         }
 
         bookRepository.deleteById(id);
+    }
+
+    private BookDto bookToDto(Book book) {
+        final BookDto bookDto = new BookDto();
+        bookDto.setId(book.getId());
+        bookDto.setTitle(book.getTitle());
+        final AuthorDto authorDto = new AuthorDto();
+        authorDto.setId(book.getAuthor().getId());
+        authorDto.setFullName(book.getAuthor().getFullName());
+        bookDto.setAuthorDto(authorDto);
+        final GenreDto genreDto = new GenreDto();
+        genreDto.setId(book.getGenre().getId());
+        genreDto.setName(book.getGenre().getName());
+        bookDto.setGenreDto(genreDto);
+
+        return bookDto;
     }
 }
