@@ -2,6 +2,7 @@ package ru.otus.hw.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,8 +19,10 @@ public class BookCreateDto {
     private String title;
 
     @JsonProperty(value = "authorId", required = true)
+    @NotNull
     private Long authorId;
 
     @JsonProperty(value = "genreId", required = true)
+    @NotNull
     private Long genreId;
 }
