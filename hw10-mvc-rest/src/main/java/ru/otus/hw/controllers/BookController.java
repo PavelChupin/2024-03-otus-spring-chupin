@@ -54,7 +54,9 @@ public class BookController {
     @PostMapping(value = "/create/api/v1", consumes = "application/json", produces = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public BookDto createBook(@Valid @RequestBody BookCreateDto bookCreateDto) {
-        final Book book = bookService.create(bookCreateDto.getTitle(), bookCreateDto.getAuthorId(), bookCreateDto.getGenreId());
+        final Book book = bookService.create(bookCreateDto.getTitle(),
+                bookCreateDto.getAuthorId(),
+                bookCreateDto.getGenreId());
         return getBookDtoByBook(book);
     }
 
