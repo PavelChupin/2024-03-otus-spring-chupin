@@ -20,7 +20,6 @@ import ru.otus.hw.services.BookService;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -62,7 +61,7 @@ class BookControllerTest {
 
         when(bookService.findAll()).thenReturn(books);
 
-        mockMvc.perform(get("/list/api/v1"))
+        mockMvc.perform(get("/api/v1/book"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(expected));
@@ -81,7 +80,7 @@ class BookControllerTest {
 
         final String input = jsonMapper.writeValueAsString(bookUpdateDtoByBook);
 
-        mockMvc.perform(put("/edit/book/api/v1").contentType(MediaType.APPLICATION_JSON).content(input))
+        mockMvc.perform(put(String.format("/api/v1/book/%d",bookUpdateDtoByBook.getId())).contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(expected));
@@ -96,7 +95,7 @@ class BookControllerTest {
 
         final String input = jsonMapper.writeValueAsString(bookUpdateDtoByBook);
 
-        mockMvc.perform(put("/edit/book/api/v1").contentType(MediaType.APPLICATION_JSON).content(input))
+        mockMvc.perform(put(String.format("/api/v1/book/%d",bookUpdateDtoByBook.getId())).contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
@@ -116,7 +115,7 @@ class BookControllerTest {
 
         when(bookService.create(bookCreateDto)).thenReturn(bookDto);
 
-        mockMvc.perform(post("/create/api/v1").contentType(MediaType.APPLICATION_JSON).content(input))
+        mockMvc.perform(post("/api/v1/book").contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(expected));
@@ -128,7 +127,7 @@ class BookControllerTest {
         final BookCreateDto bookCreateDto = new BookCreateDto("Ne", authors.get(0).getId(), genres.get(1).getId());
         final String input = jsonMapper.writeValueAsString(bookCreateDto);
 
-        mockMvc.perform(post("/create/api/v1").contentType(MediaType.APPLICATION_JSON).content(input))
+        mockMvc.perform(post("/api/v1/book").contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
@@ -136,7 +135,7 @@ class BookControllerTest {
     @DisplayName("Должен удалить книгу")
     @Test
     void deleteTest() throws Exception {
-        mockMvc.perform(delete(String.format("/delete/book/api/v1/%d", books.get(2).getId())))
+        mockMvc.perform(delete(String.format("/api/v1/book/%d", books.get(2).getId())))
                 .andExpect(status().isOk());
     }
 

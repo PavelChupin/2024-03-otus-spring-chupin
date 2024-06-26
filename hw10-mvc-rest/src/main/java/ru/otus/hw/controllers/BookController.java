@@ -28,13 +28,13 @@ public class BookController {
 
     private final BookService bookService;
 
-    @GetMapping(value = "/list/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/api/v1/book", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public List<BookDto> list() {
         return bookService.findAll();
     }
 
-    @PutMapping(value = "/edit/book/api/v1",
+    @PutMapping(value = "/api/v1/book/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
@@ -42,7 +42,7 @@ public class BookController {
         return bookService.update(bookUpdateDto);
     }
 
-    @PostMapping(value = "/create/api/v1",
+    @PostMapping(value = "/api/v1/book",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
@@ -50,7 +50,7 @@ public class BookController {
         return bookService.create(bookCreateDto);
     }
 
-    @DeleteMapping("/delete/book/api/v1/{id}")
+    @DeleteMapping("/api/v1/book/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable("id") Long id) {
         bookService.deleteById(id);
