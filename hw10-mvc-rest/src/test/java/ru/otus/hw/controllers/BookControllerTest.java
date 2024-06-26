@@ -105,8 +105,16 @@ class BookControllerTest {
     @DisplayName("Должен проверить добавление книги")
     @Test
     void createTest() throws Exception {
-        final BookCreateDto bookCreateDto = new BookCreateDto("NewBook", authors.get(0).getId(), genres.get(1).getId());
+        final BookDto bookDto = new BookDto(4L, "NewBook", authors.get(0), genres.get(1));
+
+        final BookCreateDto bookCreateDto = new BookCreateDto(bookDto.getTitle(),
+                bookDto.getAuthorDto().getId(),
+                bookDto.getGenreDto().getId()
+        );
+
         final String input = jsonMapper.writeValueAsString(bookCreateDto);
+
+        when(bookService.create(bookCreateDto)).thenReturn(bookDto);
 
         mockMvc.perform(post("/create/api/v1").contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().isCreated())
