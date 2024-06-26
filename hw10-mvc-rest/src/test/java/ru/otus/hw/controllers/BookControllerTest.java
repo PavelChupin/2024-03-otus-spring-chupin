@@ -20,6 +20,7 @@ import ru.otus.hw.services.BookService;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -93,8 +94,6 @@ class BookControllerTest {
         final BookUpdateDto bookUpdateDtoByBook = getBookUpdateDtoByBook(bookDto);
         bookUpdateDtoByBook.setTitle("tr");
 
-        when(bookService.update(bookUpdateDtoByBook)).thenReturn(bookDto);
-
         final String input = jsonMapper.writeValueAsString(bookUpdateDtoByBook);
 
         mockMvc.perform(put("/edit/book/api/v1").contentType(MediaType.APPLICATION_JSON).content(input))
@@ -112,13 +111,15 @@ class BookControllerTest {
                 bookDto.getGenreDto().getId()
         );
 
+        final String expected = jsonMapper.writeValueAsString(bookDto);
         final String input = jsonMapper.writeValueAsString(bookCreateDto);
 
-        when(bookService.create(bookCreateDto)).thenReturn(bookDto);
+        when(bookService.create(any())).thenReturn(bookDto);
 
         mockMvc.perform(post("/create/api/v1").contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(expected));
     }
 
     @DisplayName("Должен проверить валидацию title при добавление книги")
