@@ -16,7 +16,7 @@ import org.hibernate.validator.constraints.Length;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode
 public class BookUpdateDto {
 
     @JsonProperty(value = "id", required = true)

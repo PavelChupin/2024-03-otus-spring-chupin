@@ -73,7 +73,7 @@ class BookControllerTest {
     void updateTest() throws Exception {
         final BookDto bookDto = books.get(0);
         final BookUpdateDto bookUpdateDtoByBook = getBookUpdateDtoByBook(bookDto);
-        bookUpdateDtoByBook.setTitle("tr");
+        bookUpdateDtoByBook.setTitle("Title");
 
         final String expected = jsonMapper.writeValueAsString(bookDto);
 
@@ -114,7 +114,7 @@ class BookControllerTest {
         final String expected = jsonMapper.writeValueAsString(bookDto);
         final String input = jsonMapper.writeValueAsString(bookCreateDto);
 
-        when(bookService.create(any())).thenReturn(bookDto);
+        when(bookService.create(bookCreateDto)).thenReturn(bookDto);
 
         mockMvc.perform(post("/create/api/v1").contentType(MediaType.APPLICATION_JSON).content(input))
                 .andExpect(status().isCreated())

@@ -34,13 +34,17 @@ public class BookController {
         return bookService.findAll();
     }
 
-    @PutMapping(value = "/edit/book/api/v1", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/edit/book/api/v1",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public BookDto update(@Valid @RequestBody BookUpdateDto bookUpdateDto) {
         return bookService.update(bookUpdateDto);
     }
 
-    @PostMapping(value = "/create/api/v1", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/create/api/v1",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public BookDto create(@Valid @RequestBody BookCreateDto bookCreateDto) {
         return bookService.create(bookCreateDto);
