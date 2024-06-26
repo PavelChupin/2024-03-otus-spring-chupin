@@ -12,17 +12,13 @@ import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.BookUpdateDto;
 import ru.otus.hw.dto.GenreDto;
-import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Genre;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -46,41 +42,37 @@ class BookControllerTest {
     @MockBean
     private AuthorService authorService;
 
-    private static List<Genre> genres = new ArrayList<>();
-    private static List<Author> authors = new ArrayList<>();
-    private static List<Book> books = new ArrayList<>();
+    private static final List<GenreDto> genres = new ArrayList<>();
+    private static final List<AuthorDto> authors = new ArrayList<>();
+    private static final List<BookDto> books = new ArrayList<>();
 
 
     @BeforeAll
     static void init() {
-        genres.add(new Genre(1L, "Genre1"));
-        genres.add(new Genre(2L, "Genre2"));
-        authors.add(new Author(1L, "Author1"));
-        authors.add(new Author(2L, "Author2"));
-        books.add(new Book(1L, "Book1", authors.get(0), genres.get(0)));
-        books.add(new Book(2L, "Book2", authors.get(1), genres.get(1)));
-        books.add(new Book(3L, "Book3", authors.get(1), genres.get(1)));
+        genres.add(new GenreDto(1L, "Genre1"));
+        genres.add(new GenreDto(2L, "Genre2"));
+        authors.add(new AuthorDto(1L, "Author1"));
+        authors.add(new AuthorDto(2L, "Author2"));
+        books.add(new BookDto(1L, "Book1", authors.get(0), genres.get(0)));
+        books.add(new BookDto(2L, "Book2", authors.get(1), genres.get(1)));
+        books.add(new BookDto(3L, "Book3", authors.get(1), genres.get(1)));
     }
 
     private void mock() {
         when(bookService.findAll()).thenReturn(books);
         when(genreService.findAll()).thenReturn(genres);
         when(authorService.findAll()).thenReturn(authors);
-        when(bookService.findById(1L)).thenReturn(Optional.of(books.get(0)));
+        when(bookService.findById(1L)).thenReturn(books.get(0));
     }
 
     @DisplayName("Должен вернуть страницу списка книг")
     @Test
     void listBooksPage() throws Exception {
         mock();
-        final List<BookDto> bookDtos = books.stream()
-                .map(this::getBookDtoByBook)
-                .collect(Collectors.toList());
-
         mockMvc.perform(get("/list"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("list"))
-                .andExpect(model().attribute("books", bookDtos));
+                .andExpect(model().attribute("books", books));
     }
 
 
@@ -88,37 +80,25 @@ class BookControllerTest {
     @Test
     void createBookPage() throws Exception {
         mock();
-        final List<GenreDto> genreDtos = genres.stream()
-                .map(this::getGenreDtoByGenre)
-                .collect(Collectors.toList());
-        final List<AuthorDto> authorDtos = authors.stream()
-                .map(this::getAuthorDtoByAuthor)
-                .collect(Collectors.toList());
 
         mockMvc.perform(get("/create/book"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("create"))
-                .andExpect(model().attribute("genres", genreDtos))
-                .andExpect(model().attribute("authors", authorDtos));
+                .andExpect(model().attribute("genres", genres))
+                .andExpect(model().attribute("authors", authors));
     }
 
     @DisplayName("Должен вернуть страницу редактирования книги")
     @Test
     void editPage() throws Exception {
         mock();
-        final BookDto bookDto = getBookDtoByBook(books.get(0));
-        final List<GenreDto> genreDtos = genres.stream()
-                .map(this::getGenreDtoByGenre)
-                .collect(Collectors.toList());
-        final List<AuthorDto> authorDtos = authors.stream()
-                .map(this::getAuthorDtoByAuthor)
-                .collect(Collectors.toList());
+        final BookDto bookDto = books.get(0);
 
         mockMvc.perform(get(String.format("/edit/book/%d", bookDto.getId())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("edit"))
-                .andExpect(model().attribute("genres", genreDtos))
-                .andExpect(model().attribute("authors", authorDtos))
+                .andExpect(model().attribute("genres", genres))
+                .andExpect(model().attribute("authors", authors))
                 .andExpect(model().attribute("book", bookDto));
     }
 
@@ -127,7 +107,7 @@ class BookControllerTest {
     @Test
     void deletePage() throws Exception {
         mock();
-        final BookDto bookDto = getBookDtoByBook(books.get(0));
+        final BookDto bookDto = books.get(0);
 
         mockMvc.perform(get(String.format("/delete/book/%d", bookDto.getId())))
                 .andExpect(status().isOk())
@@ -138,12 +118,11 @@ class BookControllerTest {
 
     @DisplayName("Должен изменить книгу")
     @Test
-    void editBook() throws Exception {
-        final Book book = books.get(0);
-        final BookUpdateDto bookUpdateDto = getBookUpdateDtoByBook(book);
+    void update() throws Exception {
+        final BookDto bookDto = books.get(0);
+        final BookUpdateDto bookUpdateDto = getBookUpdateDtoByBookDto(bookDto);
 
-        when(bookService.update(bookUpdateDto.getId(), bookUpdateDto.getTitle(), bookUpdateDto.getAuthorId(), bookUpdateDto.getGenreId()))
-                .thenReturn(book);
+        when(bookService.update(bookUpdateDto)).thenReturn(bookDto);
 
         mockMvc.perform(post(String.format("/edit/book/%d", bookUpdateDto.getId()))
                 .param("id", bookUpdateDto.getId().toString())
@@ -158,12 +137,11 @@ class BookControllerTest {
     @DisplayName("Должен вернуть страницу редактирования книги если был передан не допустимый title книги")
     @Test
     void editBookValidTitle() throws Exception {
-        final Book book = books.get(0);
-        final BookUpdateDto bookUpdateDto = getBookUpdateDtoByBook(book);
+        final BookDto bookDto = books.get(0);
+        final BookUpdateDto bookUpdateDto = getBookUpdateDtoByBookDto(bookDto);
         bookUpdateDto.setTitle("R");
 
-        when(bookService.update(bookUpdateDto.getId(), bookUpdateDto.getTitle(), bookUpdateDto.getAuthorId(), bookUpdateDto.getGenreId()))
-                .thenReturn(book);
+        when(bookService.update(bookUpdateDto)).thenReturn(bookDto);
 
         mockMvc.perform(post(String.format("/edit/book/%d", bookUpdateDto.getId()))
                 .param("id", bookUpdateDto.getId().toString())
@@ -186,11 +164,10 @@ class BookControllerTest {
     @DisplayName("Должен добавить книгу")
     @Test
     void createBook() throws Exception {
-        final Book book = books.get(0);
-        final BookCreateDto bookCreateDto = getBookCreateDtoByBook(book);
+        final BookDto bookDto = books.get(0);
+        final BookCreateDto bookCreateDto = getBookCreateDtoByBookDto(bookDto);
 
-        when(bookService.create(bookCreateDto.getTitle(), bookCreateDto.getAuthorId(), bookCreateDto.getGenreId()))
-                .thenReturn(book);
+        when(bookService.create(bookCreateDto)).thenReturn(bookDto);
 
         mockMvc.perform(post("/create/book")
                 .param("title", bookCreateDto.getTitle())
@@ -204,11 +181,11 @@ class BookControllerTest {
     @DisplayName("Должен вернуть на страницу добавления книги")
     @Test
     void createBookValidTitle() throws Exception {
-        final Book book = books.get(0);
-        final BookCreateDto bookCreateDto = getBookCreateDtoByBook(book);
+        final BookDto bookDto = books.get(0);
+        final BookCreateDto bookCreateDto = getBookCreateDtoByBookDto(bookDto);
         bookCreateDto.setTitle("r");
-        when(bookService.create(bookCreateDto.getTitle(), bookCreateDto.getAuthorId(), bookCreateDto.getGenreId()))
-                .thenReturn(book);
+
+        when(bookService.create(bookCreateDto)).thenReturn(bookDto);
 
         mockMvc.perform(post("/create/book")
                 .param("title", bookCreateDto.getTitle())
@@ -219,53 +196,20 @@ class BookControllerTest {
                 .andExpect(view().name("redirect:/create/book"));
     }
 
-    private BookCreateDto getBookCreateDtoByBook(Book book) {
+    private BookCreateDto getBookCreateDtoByBookDto(BookDto bookdto) {
         final BookCreateDto bookCreateDto = new BookCreateDto();
-        bookCreateDto.setTitle(book.getTitle());
-        bookCreateDto.setAuthorId(book.getAuthor().getId());
-        bookCreateDto.setGenreId(book.getGenre().getId());
+        bookCreateDto.setTitle(bookdto.getTitle());
+        bookCreateDto.setAuthorId(bookdto.getAuthorDto().getId());
+        bookCreateDto.setGenreId(bookdto.getGenreDto().getId());
         return bookCreateDto;
     }
 
-    private BookDto getBookDtoByBook(Book book) {
-        final BookDto bookDto = new BookDto();
-        bookDto.setId(book.getId());
-        bookDto.setTitle(book.getTitle());
-        final AuthorDto authorDto = new AuthorDto();
-        authorDto.setId(book.getAuthor().getId());
-        authorDto.setFullName(book.getAuthor().getFullName());
-        bookDto.setAuthorDto(authorDto);
-        final GenreDto genreDto = new GenreDto();
-        genreDto.setId(book.getGenre().getId());
-        genreDto.setName(book.getGenre().getName());
-        bookDto.setGenreDto(genreDto);
-
-        return bookDto;
-    }
-
-    private GenreDto getGenreDtoByGenre(Genre genre) {
-        final GenreDto genreDto = new GenreDto();
-        genreDto.setId(genre.getId());
-        genreDto.setName(genre.getName());
-
-
-        return genreDto;
-    }
-
-    private AuthorDto getAuthorDtoByAuthor(Author author) {
-        final AuthorDto authorDto = new AuthorDto();
-        authorDto.setId(author.getId());
-        authorDto.setFullName(author.getFullName());
-
-        return authorDto;
-    }
-
-    private BookUpdateDto getBookUpdateDtoByBook(Book book) {
+    private BookUpdateDto getBookUpdateDtoByBookDto(BookDto bookDto) {
         final BookUpdateDto bookUpdateDto = new BookUpdateDto();
-        bookUpdateDto.setId(book.getId());
-        bookUpdateDto.setTitle(book.getTitle());
-        bookUpdateDto.setAuthorId(book.getAuthor().getId());
-        bookUpdateDto.setGenreId(book.getGenre().getId());
+        bookUpdateDto.setId(bookDto.getId());
+        bookUpdateDto.setTitle(bookDto.getTitle());
+        bookUpdateDto.setAuthorId(bookDto.getAuthorDto().getId());
+        bookUpdateDto.setGenreId(bookDto.getGenreDto().getId());
         return bookUpdateDto;
     }
 }
