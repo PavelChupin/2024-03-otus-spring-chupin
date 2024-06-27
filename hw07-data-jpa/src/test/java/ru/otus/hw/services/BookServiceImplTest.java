@@ -157,8 +157,8 @@ class BookServiceImplTest {
     void deleteByIdTest() {
         final List<Book> expected = bookRepository.findAll();
 
-        bookService.deleteById(expected.get(0).getId());
-        expected.remove(0);
+        bookService.deleteById(expected.get(1).getId());
+        expected.remove(1);
 
         final List<Book> actual = bookRepository.findAll();
 
