@@ -26,8 +26,6 @@ public class PageBookController {
 
     @GetMapping("/list")
     public String listBooksPage(Model model) {
-        final List<BookDto> bookDtos = bookService.findAll();
-        model.addAttribute("books", bookDtos);
         return "list";
     }
 

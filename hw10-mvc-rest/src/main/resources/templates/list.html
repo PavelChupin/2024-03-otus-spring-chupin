@@ -39,7 +39,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="book : ${books}" th:object="${book}">
+    <!--<tr th:each="book : ${books}" th:object="${book}">
         <td th:text="*{id}">1</td>
         <td th:text="*{title}">Book</td>
         <td th:text="*{authorDto.fullName}">Author</td>
@@ -50,7 +50,7 @@
         <td>
             <a href="delete.html" th:href="@{/delete/book/__*{id}__}">Delete</a>
         </td>
-    </tr>
+    </tr>-->
     </tbody>
 </table>
 <!--<script>

@@ -63,11 +63,9 @@ class PageBookControllerTest {
     @DisplayName("Должен вернуть страницу списка книг")
     @Test
     void listBooksPageTest() throws Exception {
-        mock();
         mockMvc.perform(get("/list"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("list"))
-                .andExpect(model().attribute("books", books));
+                .andExpect(view().name("list"));
     }
 
 
@@ -75,7 +73,6 @@ class PageBookControllerTest {
     @Test
     void createBookPageTest() throws Exception {
         mock();
-
         mockMvc.perform(get("/create/book"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("create"))

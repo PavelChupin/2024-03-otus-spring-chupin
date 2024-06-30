@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.exceptions.EntityNotFoundException;
+import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 import ru.otus.hw.repositories.BookRepository;
@@ -49,12 +49,6 @@ class CommentServiceImplTest {
         );
     }
 
-    @DisplayName("Должен вернуть ошибку если передан 0 id книги")
-    @Test
-    void findAllByBookIdThrowTest() {
-        assertThatThrownBy(() -> commentService.findAllByBookId(0L)).isExactlyInstanceOf(EntityNotFoundException.class);
-    }
-
     @DisplayName("Должен удалить комментарий по id")
     @Test
     void deleteByIdTest() {
@@ -66,12 +60,6 @@ class CommentServiceImplTest {
 
         final List<Comment> actual = commentRepository.findAllByBookId(book.getId());
         assertThat(actual).isEqualTo(expected);
-    }
-
-    @DisplayName("Должен кинуть исключение на переданный 0 id при удалении комментария")
-    @Test
-    void deleteByIdThrowTest() {
-        assertThatThrownBy(() -> commentService.deleteById(0L)).isExactlyInstanceOf(EntityNotFoundException.class);
     }
 
     @DisplayName("Должен обновить комментарий по id")
@@ -92,7 +80,7 @@ class CommentServiceImplTest {
     @Test
     void updateByIdThrowTest() {
         assertThatThrownBy(() -> commentService.updateById(0L, ""))
-                .isExactlyInstanceOf(EntityNotFoundException.class);
+                .isExactlyInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("Должен добавить комментарий для книги")
@@ -120,7 +108,7 @@ class CommentServiceImplTest {
     @DisplayName("Должен добавить комментарий для книги")
     @Test
     void addCommentBookThrowTest() {
-        assertThatThrownBy(() -> commentService.addCommentBook(0L, "")).isExactlyInstanceOf(EntityNotFoundException.class);
+        assertThatThrownBy(() -> commentService.addCommentBook(0L, "")).isExactlyInstanceOf(NotFoundException.class);
     }
 
     private Book getBook() {

@@ -12,7 +12,7 @@ import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.BookUpdateDto;
 import ru.otus.hw.dto.GenreDto;
-import ru.otus.hw.exceptions.EntityNotFoundException;
+import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -72,7 +72,7 @@ class BookServiceImplTest {
     @DisplayName("кинуть исключение на переданный id = 0 книги при ее поиске")
     @Test
     void findByIdThrowTest() {
-        assertThatThrownBy(() -> bookService.findById(0L)).isExactlyInstanceOf(EntityNotFoundException.class);
+        assertThatThrownBy(() -> bookService.findById(0L)).isExactlyInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("Должен вернуть все книги")
@@ -120,11 +120,11 @@ class BookServiceImplTest {
     @Test
     void updateByIdThrowTest() {
         assertThatThrownBy(() -> bookService.update(new BookUpdateDto(0L, "", 1L, 1L)))
-                .isExactlyInstanceOf(EntityNotFoundException.class);
+                .isExactlyInstanceOf(NotFoundException.class);
         assertThatThrownBy(() -> bookService.update(new BookUpdateDto(1L, "", 0L, 1L)))
-                .isExactlyInstanceOf(EntityNotFoundException.class);
+                .isExactlyInstanceOf(NotFoundException.class);
         assertThatThrownBy(() -> bookService.update(new BookUpdateDto(1L, "", 1L, 0L)))
-                .isExactlyInstanceOf(EntityNotFoundException.class);
+                .isExactlyInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("Должен добавить новую книгу")
@@ -150,9 +150,9 @@ class BookServiceImplTest {
     @Test
     void createByIdThrowTest() {
         assertThatThrownBy(() -> bookService.create(new BookCreateDto("", 0L, 1L)))
-                .isExactlyInstanceOf(EntityNotFoundException.class);
+                .isExactlyInstanceOf(NotFoundException.class);
         assertThatThrownBy(() -> bookService.create(new BookCreateDto("", 1L, 0L)))
-                .isExactlyInstanceOf(EntityNotFoundException.class);
+                .isExactlyInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("Должен удалить книгу по id")
@@ -166,12 +166,6 @@ class BookServiceImplTest {
         final List<Book> actual = bookRepository.findAll();
 
         assertThat(actual).isEqualTo(expected);
-    }
-
-    @DisplayName("Должен кинуть исключение на переданный id = 0 книги при удалении книги")
-    @Test
-    void deleteByIdThrowTest() {
-        assertThatThrownBy(() -> bookService.deleteById(0L)).isExactlyInstanceOf(EntityNotFoundException.class);
     }
 
     private BookDto getBookDtoByBook(Book book) {

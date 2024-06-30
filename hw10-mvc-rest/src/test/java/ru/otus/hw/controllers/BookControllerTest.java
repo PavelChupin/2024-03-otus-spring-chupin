@@ -15,11 +15,14 @@ import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.BookUpdateDto;
 import ru.otus.hw.dto.GenreDto;
+import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.services.BookService;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -67,6 +70,16 @@ class BookControllerTest {
                 .andExpect(content().json(expected));
     }
 
+    @DisplayName("Должен проверить возврат HTTP 500 при получении списка книг")
+    @Test
+    void listInternalServerErrorTest() throws Exception {
+        when(bookService.findAll()).thenThrow(RuntimeException.class);
+
+        mockMvc.perform(get("/api/v1/book"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
     @DisplayName("Должен проверить изменение книги")
     @Test
     void updateTest() throws Exception {
@@ -80,7 +93,10 @@ class BookControllerTest {
 
         final String input = jsonMapper.writeValueAsString(bookUpdateDtoByBook);
 
-        mockMvc.perform(put(String.format("/api/v1/book/%d",bookUpdateDtoByBook.getId())).contentType(MediaType.APPLICATION_JSON).content(input))
+        mockMvc.perform(put(String.format("/api/v1/book/%d", bookUpdateDtoByBook.getId()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(input)
+        )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(expected));
@@ -88,15 +104,54 @@ class BookControllerTest {
 
     @DisplayName("Должен проверить валидацию title при изменении книги")
     @Test
-    void updateValidTitleTest() throws Exception {
+    void updateInValidTitleTest() throws Exception {
         final BookDto bookDto = books.get(0);
         final BookUpdateDto bookUpdateDtoByBook = getBookUpdateDtoByBook(bookDto);
         bookUpdateDtoByBook.setTitle("tr");
 
         final String input = jsonMapper.writeValueAsString(bookUpdateDtoByBook);
 
-        mockMvc.perform(put(String.format("/api/v1/book/%d",bookUpdateDtoByBook.getId())).contentType(MediaType.APPLICATION_JSON).content(input))
+        mockMvc.perform(put(String.format("/api/v1/book/%d", bookUpdateDtoByBook.getId()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(input)
+        )
                 .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @DisplayName("Должен проверить возврат HTTP 404 при изменении книги")
+    @Test
+    void updateNotExistsObjectByIdTest() throws Exception {
+        final BookDto bookDto = books.get(0);
+        final BookUpdateDto bookUpdateDtoByBook = getBookUpdateDtoByBook(bookDto);
+
+        final String input = jsonMapper.writeValueAsString(bookUpdateDtoByBook);
+
+        when(bookService.update(bookUpdateDtoByBook)).thenThrow(NotFoundException.class);
+
+        mockMvc.perform(put(String.format("/api/v1/book/%d", bookUpdateDtoByBook.getId()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(input)
+        )
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @DisplayName("Должен проверить возврат HTTP 500 при изменении книги")
+    @Test
+    void updateInternalServerErrorTest() throws Exception {
+        final BookDto bookDto = books.get(0);
+        final BookUpdateDto bookUpdateDtoByBook = getBookUpdateDtoByBook(bookDto);
+
+        final String input = jsonMapper.writeValueAsString(bookUpdateDtoByBook);
+
+        when(bookService.update(bookUpdateDtoByBook)).thenThrow(RuntimeException.class);
+
+        mockMvc.perform(put(String.format("/api/v1/book/%d", bookUpdateDtoByBook.getId()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(input)
+        )
+                .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
@@ -123,7 +178,7 @@ class BookControllerTest {
 
     @DisplayName("Должен проверить валидацию title при добавление книги")
     @Test
-    void createValidTitleTest() throws Exception {
+    void createInValidTitleTest() throws Exception {
         final BookCreateDto bookCreateDto = new BookCreateDto("Ne", authors.get(0).getId(), genres.get(1).getId());
         final String input = jsonMapper.writeValueAsString(bookCreateDto);
 
@@ -132,11 +187,46 @@ class BookControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
+    @DisplayName("Должен проверить HTTP 404 при добавление книги")
+    @Test
+    void createNotExistsObjectByIdTest() throws Exception {
+        final BookCreateDto bookCreateDto = new BookCreateDto("New", authors.get(0).getId(), genres.get(1).getId());
+        final String input = jsonMapper.writeValueAsString(bookCreateDto);
+
+        when(bookService.create(bookCreateDto)).thenThrow(NotFoundException.class);
+
+        mockMvc.perform(post("/api/v1/book").contentType(MediaType.APPLICATION_JSON).content(input))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @DisplayName("Должен проверить HTTP 500 при добавление книги")
+    @Test
+    void createInternalServerErrorTest() throws Exception {
+        final BookCreateDto bookCreateDto = new BookCreateDto("New", authors.get(0).getId(), genres.get(1).getId());
+        final String input = jsonMapper.writeValueAsString(bookCreateDto);
+
+        when(bookService.create(bookCreateDto)).thenThrow(RuntimeException.class);
+
+        mockMvc.perform(post("/api/v1/book").contentType(MediaType.APPLICATION_JSON).content(input))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
     @DisplayName("Должен удалить книгу")
     @Test
     void deleteTest() throws Exception {
         mockMvc.perform(delete(String.format("/api/v1/book/%d", books.get(2).getId())))
                 .andExpect(status().isOk());
+    }
+
+    @DisplayName("Должен вернуть HTTP 500 при удалении книги")
+    @Test
+    void deleteInternalServerErrorTest() throws Exception {
+        doThrow(RuntimeException.class).when(bookService).deleteById(anyLong());
+
+        mockMvc.perform(delete(String.format("/api/v1/book/%d", books.get(2).getId())))
+                .andExpect(status().isInternalServerError());
     }
 
     private BookUpdateDto getBookUpdateDtoByBook(BookDto book) {

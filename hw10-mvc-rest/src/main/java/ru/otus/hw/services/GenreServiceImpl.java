@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.GenreDto;
-import ru.otus.hw.models.Genre;
 import ru.otus.hw.repositories.GenreRepository;
+import ru.otus.hw.services.mapper.GenreMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,16 +19,7 @@ public class GenreServiceImpl implements GenreService {
     @Transactional(readOnly = true)
     public List<GenreDto> findAll() {
         return genreRepository.findAll().stream()
-                .map(this::genreToDto)
+                .map(GenreMapper::toDto)
                 .collect(Collectors.toList());
-    }
-
-    private GenreDto genreToDto(Genre genre) {
-        final GenreDto genreDto = new GenreDto();
-        genreDto.setId(genre.getId());
-        genreDto.setName(genre.getName());
-
-
-        return genreDto;
     }
 }
