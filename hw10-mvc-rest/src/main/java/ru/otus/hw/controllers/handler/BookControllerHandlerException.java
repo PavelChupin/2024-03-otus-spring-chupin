@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.otus.hw.exceptions.NotFoundException;
 
-@ControllerAdvice(annotations = BookExceptionHandler.class)
+@ControllerAdvice(annotations = BookExceptionHandler.class/*assignableTypes = BookController.class*/)
 public class BookControllerHandlerException {
 
     @ExceptionHandler(Exception.class)
