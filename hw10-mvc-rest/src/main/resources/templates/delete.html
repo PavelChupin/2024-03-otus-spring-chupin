@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Delete book</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+    <script>
+        function deleteBook() {
+            const bookId = document.getElementById("id-input")
+
+            //const book = {
+            //    title: bookTitle.value
+            //    , authorId: authorId.value
+            //    , genreId: genreId.value
+           // }
+
+            fetch("/api/v1/book/" + bookId.value, {
+                method: 'DELETE',
+                //headers: {
+                //    'Accept': 'application/json',
+                //    'Content-Type': 'application/json'
+                //},
+                //body: JSON.stringify(book)
+            })
+             //   .then(rawResponse => rawResponse.json())
+                .then(location.href = "/list")
+            //.then(json => savedBookContainer.innerHTML = JSON.stringify(json, null, 4))
+        }
+    </script>
+</head>
+<body>
+
+<form id="delete-form" action="delete.html" method="post" th:object="${book}">
+    <h3>Book delete:</h3>
+
+    <div class="row">
+        <label for="id-input">ID:</label>
+        <input id="id-input" type="text" readonly="readonly" value="1" th:value="*{id}"/>
+    </div>
+
+    <div class="row">
+        <label for="title-input">Title:</label>
+        <input id="title-input" type="text" readonly="readonly" value="title" th:value="*{title}"/>
+    </div>
+
+    <div class="row">
+        <button type="button" onclick="deleteBook()">Delete</button>
+        <a href="list.html" th:href="@{/list}"><button type="button">Cancel</button></a>
+    </div>
+</form>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Library</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+    </style>
+</head>
+<body>
+<h3>Library</h3>
+
+<form id="start-page" action="list.html" th:action="@{/list}">
+    <div class="row">
+        <button type="submit">OpenLibrary</button>
+    </div>
+</form>
+</body>
+</html>

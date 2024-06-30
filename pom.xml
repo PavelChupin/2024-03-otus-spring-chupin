@@ -22,10 +22,11 @@
         <module>hw02-annotation-config</module>
         <module>hw03-spring-boot</module>
         <module>hw04</module>
-       <module>hw05-jdbc-simple</module>
+        <module>hw05-jdbc-simple</module>
         <module>hw06-jpa</module>
         <module>hw07-data-jpa</module>
         <module>hw09-mvc</module>
+        <module>hw10-mvc-rest</module>
     </modules>
 
     <properties>
