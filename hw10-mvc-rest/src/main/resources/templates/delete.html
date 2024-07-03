@@ -39,7 +39,7 @@
                 //},
                 //body: JSON.stringify(book)
             })
-                //   .then(rawResponse => rawResponse.json())
+                //.then(response => response.json())
                 .then(location.href = "/list")
             //.then(json => savedBookContainer.innerHTML = JSON.stringify(json, null, 4))
         }
@@ -60,17 +60,37 @@
     <div class="row">
         <label for="title-input">Title:</label>
         <!--<input id="title-input" type="text" readonly="readonly" value="title" th:value="*{title}"/>-->
-        <input id="title-input" type="text" readonly="readonly" value="title"/>
+        <input id="title-input" type="text" readonly="readonly" value=""/>
     </div>
 
     <div class="row">
         <button type="button" onclick="deleteBook()">Delete</button>
-        <!--<a href="list.html" th:href="@{/list}"><button type="button">Cancel</button></a>-->
-        <a href="list.html">
+        <a href="list.html" th:href="@{/list}">
             <button type="button">Cancel</button>
         </a>
     </div>
 </form>
+<script>
+    function GetTitle(id) {
+        fetch('/api/v1/book/' + id, {
+            //url: "/api/info",
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            //contentType: "application/json",
+        }).then(response => response.json())
+            .then((book) => {
+                document.getElementById("title-input").setAttribute("value", book.title);
+            });
+    };
 
+    window.onload = () => {
+        var url = window.location.href;
+        var id = url.split("/").reverse()[0];
+        document.getElementById("id-input").setAttribute("value", id);
+        GetTitle(id);
+    };
+</script>
 </body>
 </html>
