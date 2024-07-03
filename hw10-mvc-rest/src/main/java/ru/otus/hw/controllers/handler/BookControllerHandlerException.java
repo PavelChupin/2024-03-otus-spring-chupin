@@ -1,34 +1,36 @@
 package ru.otus.hw.controllers.handler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.otus.hw.dto.ErrorDto;
 import ru.otus.hw.exceptions.NotFoundException;
 
-@ControllerAdvice(annotations = BookExceptionHandler.class/*assignableTypes = BookController.class*/)
+@RestControllerAdvice(annotations = BookExceptionHandler.class/*assignableTypes = BookController.class*/)
+@Slf4j
 public class BookControllerHandlerException {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> exceptionHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(String.format("{\"error\": \"%s\"}", e.toString()));
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorDto exceptionHandler(Exception e) {
+        log.error("Internal Server Error.", e);
+        return new ErrorDto(e.toString());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> exceptionNotValidHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(String.format("{\"error\": \"%s\"}", e.getMessage()));
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto methodArgumentNotValidExceptionHandler(Exception e) {
+        log.warn("Bad Request.", e);
+        return new ErrorDto(e.getMessage());
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<?> exceptionNotFoundHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(String.format("{\"error\": \"%s\"}", e.getMessage()));
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorDto notFoundExceptionHandler(Exception e) {
+        log.warn("Not Found.", e);
+        return new ErrorDto(e.getMessage());
     }
 }
