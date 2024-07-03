@@ -46,42 +46,48 @@
             })
                 .then(rawResponse => rawResponse.json())
                 .then(location.href = "/list")
-                //.then(json => savedBookContainer.innerHTML = JSON.stringify(json, null, 4))
+            //.then(json => savedBookContainer.innerHTML = JSON.stringify(json, null, 4))
         }
     </script>
 
 </head>
 <body>
 
-<form id="edit-form" action="edit.html" method="post" th:object="${book}">
+<!--<form id="edit-form" action="edit.html" method="post" th:object="${book}" >-->
+<form id="edit-form" action="edit.html" method="post">
     <h3>Book Info:</h3>
 
     <div class="row">
         <label for="id-input">ID:</label>
-        <input id="id-input" type="text" readonly="readonly" value="1" th:value="*{id}"/>
+        <!--<input id="id-input" type="text" readonly="readonly" value="1" th:value="*{id}" />-->
+        <input id="id-input" type="text" readonly="readonly" value="1"/>
     </div>
 
     <div class="row">
         <label for="book-title-input">Title:</label>
-        <input id="book-title-input" name="title" type="text" value="Title" th:value="*{title}"/>
+        <!--<input id="book-title-input" name="title" type="text" value="Title" th:value="*{title}" />-->
+        <input id="book-title-input" name="title" type="text" value="Title"/>
     </div>
 
     <div>
         <label for="book-author-input">Author:</label>
         <select id="book-author-input" name="authorId">
-            <option th:each="author : ${authors}" th:value="${author.id}" th:text="${author.fullName}">Name</option>
+            <!--<option th:each="author : ${authors}" th:value="${author.id}" th:text="${author.fullName}">Name</option>-->
+            <option value="Author" text="Author"></option>
         </select>
     </div>
     <div>
         <label for="book-genre-input">Genre:</label>
         <select id="book-genre-input" name="genreId">
-            <option th:each="genre : ${genres}" th:value="${genre.id}" th:text="${genre.name}">Name</option>
+            <!--<option th:each="genre : ${genres}" th:value="${genre.id}" th:text="${genre.name}">Name</option>-->
+            <option value="Genre" text="Genre"></option>
         </select>
     </div>
 
     <div class="row">
         <button type="button" onclick="saveBook()">Save</button>
-        <a href="list.html" th:href="@{/list}">
+        <!--<a href="list.html" th:href="@{/list}">-->
+        <a href="list.html">
             <button type="button">Cancel</button>
         </a>
     </div>

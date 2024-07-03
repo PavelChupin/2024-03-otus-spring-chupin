@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.otus.hw.dto.ErrorDto;
 import ru.otus.hw.exceptions.NotFoundException;
 
-@RestControllerAdvice(annotations = BookExceptionHandler.class/*assignableTypes = BookController.class*/)
+@RestControllerAdvice(annotations = {BookExceptionHandler.class,
+        GenreExceptionHandler.class,
+        AuthorExceptionHandler.class})
 @Slf4j
-public class BookControllerHandlerException {
+public class LibraryControllerHandlerException {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
