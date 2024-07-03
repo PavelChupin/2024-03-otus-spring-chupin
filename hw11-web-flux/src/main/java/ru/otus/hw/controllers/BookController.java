@@ -33,6 +33,12 @@ public class BookController {
         return bookService.findAll();
     }
 
+    @GetMapping(value = "/api/v1/book/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public BookDto bookById(@PathVariable("id") String id) {
+        return bookService.findById(id);
+    }
+
     @PutMapping(value = "/api/v1/book/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
