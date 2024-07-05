@@ -57,6 +57,32 @@ class BookControllerTest {
         books.add(new BookDto(3L, "Book3", authors.get(1), genres.get(1)));
     }
 
+    @DisplayName("Должен вернуть книгу по id")
+    @Test
+    void bookByIdTest() throws Exception {
+        final BookDto bookDto = books.get(1);
+        final String expected = jsonMapper.writeValueAsString(bookDto);
+
+        when(bookService.findById(bookDto.getId())).thenReturn(bookDto);
+
+        mockMvc.perform(get(String.format("/api/v1/book/%d", bookDto.getId())))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(expected));
+    }
+
+    @DisplayName("Должен вернуть книгу по id")
+    @Test
+    void bookByIdInternalServerErrorTest() throws Exception {
+        final BookDto bookDto = books.get(1);
+
+        when(bookService.findById(bookDto.getId())).thenThrow(RuntimeException.class);
+
+        mockMvc.perform(get(String.format("/api/v1/book/%d", bookDto.getId())))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
     @DisplayName("Должен проверить возврат списка книг")
     @Test
     void listTest() throws Exception {

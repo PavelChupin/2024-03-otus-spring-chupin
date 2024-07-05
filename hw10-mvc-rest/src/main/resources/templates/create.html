@@ -43,7 +43,6 @@
             })
                 .then(rawResponse => rawResponse.json())
                 .then(location.href = "/list")
-            //.then(json => savedBookContainer.innerHTML = JSON.stringify(json, null, 4))
         }
     </script>
 </head>
@@ -59,13 +58,13 @@
     <div>
         <label for="book-author-input">Author:</label>
         <select id="book-author-input" name="authorId">
-            <option th:each="author : ${authors}" th:value="${author.id}" th:text="${author.fullName}">Name</option>
+            <!--<option th:each="author : ${authors}" th:value="${author.id}" th:text="${author.fullName}">Name</option>-->
         </select>
     </div>
     <div>
         <label for="book-genre-input">Genre:</label>
         <select id="book-genre-input" name="genreId">
-            <option th:each="genre : ${genres}" th:value="${genre.id}" th:text="${genre.name}">Name</option>
+            <!--<option th:each="genre : ${genres}" th:value="${genre.id}" th:text="${genre.name}">Name</option>-->
         </select>
     </div>
     <div class="row">
@@ -75,6 +74,52 @@
         </a>
     </div>
 </form>
+
+<script>
+    function GetInfoParams() {
+        fetch('/api/v1/author', {
+            //url: "/api/info",
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            //contentType: "application/json",
+        }).then(response => response.json())
+            .then((json) => {
+                let li = "";
+                // 3. Loop through each data and add a table row
+                json.forEach((author) => {
+                    li += `<option value="${author.id}">${author.fullName}</option>`;
+                });
+
+                // Прикрепляем сформированный кусок текста HTML к тегу с id = book-author-input
+                document.getElementById("book-author-input").innerHTML = li;
+            });
+
+        fetch('/api/v1/genre', {
+            //url: "/api/info",
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            //contentType: "application/json",
+        }).then(response => response.json())
+            .then((json) => {
+                let li = "";
+                // 3. Loop through each data and add a table row
+                json.forEach((genre) => {
+                    li += `<option value="${genre.id}">${genre.name}</option>`;
+                });
+
+                // Прикрепляем сформированный кусок текста HTML к тегу с id = book-genre-input
+                document.getElementById("book-genre-input").innerHTML = li;
+            });
+    }
+
+    window.onload = () => {
+        GetInfoParams();
+    };
+</script>
 
 </body>
 </html>
