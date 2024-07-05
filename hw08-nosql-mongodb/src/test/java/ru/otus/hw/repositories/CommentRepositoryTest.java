@@ -17,8 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataMongoTest
 class CommentRepositoryTest {
 
-    private static final Long BOOK_ID = 1L;
-
     @Autowired
     private CommentRepository commentRepository;
 

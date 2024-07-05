@@ -14,16 +14,23 @@ import ru.otus.hw.repositories.GenreRepository;
 
 @ChangeLog(order = "001")
 public class InitMongoDBDataChangeLog {
+
     private Genre genre1;
+
     private Genre genre2;
+
     private Genre genre3;
 
     private Author author1;
+
     private Author author2;
+
     private Author author3;
 
     private Book book1;
+
     private Book book2;
+
     private Book book3;
 
     @ChangeSet(order = "000", id = "dropDB", author = "chupinpavel", runAlways = true)

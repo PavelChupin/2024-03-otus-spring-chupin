@@ -4,7 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 import ru.otus.hw.repositories.BookRepository;
@@ -15,8 +16,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Сервис по работе с комментариями")
-@SpringBootTest(classes = {CommentServiceImpl.class, CommentRepository.class, BookRepository.class})
-
+@SpringBootTest
+@Transactional(propagation = Propagation.NEVER)
 class CommentServiceImplTest {
 
     @Autowired
