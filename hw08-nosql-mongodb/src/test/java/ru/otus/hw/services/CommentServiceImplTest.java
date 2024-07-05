@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.models.Book;
@@ -17,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Сервис по работе с комментариями")
 @SpringBootTest
+@Import(CommentServiceImpl.class)
 @Transactional(propagation = Propagation.NEVER)
 class CommentServiceImplTest {
 
