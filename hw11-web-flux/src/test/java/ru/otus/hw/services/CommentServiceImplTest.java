@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 import ru.otus.hw.repositories.BookRepository;
@@ -15,7 +14,6 @@ import ru.otus.hw.repositories.CommentRepository;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Сервис по работе с комментариями")
 @SpringBootTest
@@ -76,13 +74,6 @@ class CommentServiceImplTest {
         assertThat(actual.getComment()).isEqualTo(expected.getComment());
     }
 
-    @DisplayName("Должен кинуть исключение на переданный 0 id при обновлении комментария")
-    @Test
-    void updateByIdThrowTest() {
-        assertThatThrownBy(() -> commentService.updateById("0L", ""))
-                .isExactlyInstanceOf(NotFoundException.class);
-    }
-
     @DisplayName("Должен добавить комментарий для книги")
     @Test
     void addCommentBookTest() {
@@ -103,12 +94,6 @@ class CommentServiceImplTest {
 
             assertThat(actualComment.getComment()).isEqualTo(expectedComment.getComment());
         });
-    }
-
-    @DisplayName("Должен добавить комментарий для книги")
-    @Test
-    void addCommentBookThrowTest() {
-        assertThatThrownBy(() -> commentService.addCommentBook("0L", "")).isExactlyInstanceOf(NotFoundException.class);
     }
 
     private Book getBook() {

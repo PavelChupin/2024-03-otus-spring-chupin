@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class BookServiceImpl implements BookService {
+
     private final AuthorRepository authorRepository;
 
     private final GenreRepository genreRepository;
@@ -28,7 +29,7 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     public BookDto findById(String id) {
         return BookMapper.toDto(bookRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Book with id %d not found".formatted(id))));
+                .orElseThrow(() -> new NotFoundException("Book with id %s not found".formatted(id))));
     }
 
     @Override

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ErrorDto {
+
     @JsonProperty(value = "error")
     private String message;
 }

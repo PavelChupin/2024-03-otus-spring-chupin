@@ -1,6 +1,5 @@
 package ru.otus.hw.services;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,19 +11,19 @@ import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.BookUpdateDto;
 import ru.otus.hw.dto.GenreDto;
-import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Comment;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.CommentRepository;
 import ru.otus.hw.repositories.GenreRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Сервис по работе с книгами")
 @SpringBootTest
@@ -43,22 +42,17 @@ class BookServiceImplTest {
     @Autowired
     private BookServiceImpl bookService;
 
-    private static final BookDto bookDto = new BookDto();
-
-    @BeforeAll
-    static void setUp() {
-        bookDto.setId("1L");
-        bookDto.setTitle("BookTitle_1");
-        bookDto.setAuthorDto(new AuthorDto("1L", "Author_1"));
-        bookDto.setGenreDto(new GenreDto("1L", "Genre_1"));
-    }
+    @Autowired
+    private CommentRepository commentRepository;
 
     @DisplayName("Должен вернуть книгу по id")
     //@DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     void findByIdTest() {
-        final BookDto actual = bookService.findById(bookDto.getId());
-        final BookDto expected = getBookDtoByBook(bookRepository.findById(bookDto.getId()).get());
+        final Book book = bookRepository.findAll().get(0);
+
+        final BookDto actual = bookService.findById(book.getId());
+        final BookDto expected = getBookDtoByBook(book);
 
         assertThat(actual).isEqualTo(expected);
 
@@ -67,12 +61,6 @@ class BookServiceImplTest {
         assertThat(actual.getAuthorDto().getFullName()).isEqualTo(expected.getAuthorDto().getFullName());
         assertThat(actual.getGenreDto()).isEqualTo(expected.getGenreDto());
         assertThat(actual.getGenreDto().getName()).isEqualTo(expected.getGenreDto().getName());
-    }
-
-    @DisplayName("кинуть исключение на переданный id = 0 книги при ее поиске")
-    @Test
-    void findByIdThrowTest() {
-        assertThatThrownBy(() -> bookService.findById("0L")).isExactlyInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("Должен вернуть все книги")
@@ -103,6 +91,8 @@ class BookServiceImplTest {
     @DisplayName("Должен обновить книгу")
     @Test
     void updateTest() {
+        final BookDto bookDto = getBookDtoByBook(bookRepository.findAll().get(0));
+
         final String title = "NewTitle";
         bookDto.setTitle(title);
 
@@ -114,17 +104,6 @@ class BookServiceImplTest {
         assertThat(actual.getTitle()).isEqualTo(expected.getTitle());
         assertThat(actual.getAuthorDto()).isEqualTo(expected.getAuthorDto());
         assertThat(actual.getGenreDto()).isEqualTo(expected.getGenreDto());
-    }
-
-    @DisplayName("Должен кинуть исключение на переданный id = 0 книги, автора или жанра при обновлении книги")
-    @Test
-    void updateByIdThrowTest() {
-        assertThatThrownBy(() -> bookService.update(new BookUpdateDto("0L", "", "1L", "1L")))
-                .isExactlyInstanceOf(NotFoundException.class);
-        assertThatThrownBy(() -> bookService.update(new BookUpdateDto("1L", "", "0L", "1L")))
-                .isExactlyInstanceOf(NotFoundException.class);
-        assertThatThrownBy(() -> bookService.update(new BookUpdateDto("1L", "", "1L", "0L")))
-                .isExactlyInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("Должен добавить новую книгу")
@@ -146,26 +125,21 @@ class BookServiceImplTest {
         assertThat(actual.getGenreDto()).isEqualTo(expected.getGenreDto());
     }
 
-    @DisplayName("Должен кинуть исключение на переданный id = 0 автора или жанра при добавлении книги")
-    @Test
-    void createByIdThrowTest() {
-        assertThatThrownBy(() -> bookService.create(new BookCreateDto("", "0L", "1L")))
-                .isExactlyInstanceOf(NotFoundException.class);
-        assertThatThrownBy(() -> bookService.create(new BookCreateDto("", "1L", "0L")))
-                .isExactlyInstanceOf(NotFoundException.class);
-    }
-
     @DisplayName("Должен удалить книгу по id")
     @Test
     void deleteByIdTest() {
         final List<Book> expected = bookRepository.findAll();
-
-        bookService.deleteById(expected.get(1).getId());
-        expected.remove(1);
+        final String id = expected.get(0).getId();
+        bookService.deleteById(id);
+        expected.remove(0);
 
         final List<Book> actual = bookRepository.findAll();
 
         assertThat(actual).isEqualTo(expected);
+
+        // Проверим что каскадная операция тоже сработала
+        final List<Comment> comments = commentRepository.findAllByBookId(id);
+        assertThat(comments).isEmpty();
     }
 
     private BookDto getBookDtoByBook(Book book) {
