@@ -18,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Сервис по работе с комментариями")
 @SpringBootTest
-@Import(CommentServiceImpl.class)
 @Transactional(propagation = Propagation.NEVER)
 class CommentServiceImplTest {
 

@@ -23,7 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Сервис по работе с книгами")
 @SpringBootTest
-@Import(BookServiceImpl.class)
 @Transactional(propagation = Propagation.NEVER)
 class BookServiceImplTest {
 
