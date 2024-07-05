@@ -35,7 +35,7 @@ class PageBookControllerTest {
     @DisplayName("Должен вернуть страницу редактирования книги")
     @Test
     void editPageTest() throws Exception {
-        mockMvc.perform(get(String.format("/edit/book/%d", 1L)))
+        mockMvc.perform(get(String.format("/edit/book/%s", "1L")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("edit"));
     }
@@ -43,7 +43,7 @@ class PageBookControllerTest {
     @DisplayName("Должен вернуть страницу удаления книги")
     @Test
     void deletePageTest() throws Exception {
-        mockMvc.perform(get(String.format("/delete/book/%d", 1L)))
+        mockMvc.perform(get(String.format("/delete/book/%s", "1L")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("delete"));
     }
