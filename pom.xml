@@ -27,6 +27,7 @@
         <module>hw07-data-jpa</module>
         <module>hw08-nosql-mongodb</module>
         <module>hw09-mvc</module>
+        <module>hw10-mvc-rest</module>
     </modules>
 
     <properties>
