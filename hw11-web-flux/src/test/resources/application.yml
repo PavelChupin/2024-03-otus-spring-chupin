@@ -1,9 +1,9 @@
 spring:
   data:
     mongodb:
-      port: 8084
+      port: 0 # when flapdoodle using
       database: learn
-      host: localhost
+      # host: localhost
 
 de:
   flapdoodle:
