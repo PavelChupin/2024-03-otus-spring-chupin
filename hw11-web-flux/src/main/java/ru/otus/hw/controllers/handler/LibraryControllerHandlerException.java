@@ -24,14 +24,14 @@ public class LibraryControllerHandlerException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDto methodArgumentNotValidExceptionHandler(Exception e) {
+    public ErrorDto exceptionHandler(MethodArgumentNotValidException e) {
         log.warn("Bad Request.", e);
         return new ErrorDto(e.getMessage());
     }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorDto notFoundExceptionHandler(Exception e) {
+    public ErrorDto exceptionHandler(NotFoundException e) {
         log.warn("Not Found.", e);
         return new ErrorDto(e.getMessage());
     }
