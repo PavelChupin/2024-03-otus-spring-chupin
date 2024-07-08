@@ -6,10 +6,7 @@ import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventLis
 import org.springframework.data.mongodb.core.mapping.event.BeforeDeleteEvent;
 import org.springframework.stereotype.Component;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Comment;
 import ru.otus.hw.repositories.CommentRepository;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -22,7 +19,8 @@ public class BookCascadeDeleteEventListener extends AbstractMongoEventListener<B
         super.onBeforeDelete(event);
         final String bookId = event.getSource().get("_id").toString();
 
-        final List<Comment> comments = commentRepository.findAllByBookId(bookId);
-        commentRepository.deleteAll(comments);
+//        final List<Comment> comments = commentRepository.findAllByBookId(bookId);
+//        commentRepository.deleteAll(comments);
+        commentRepository.deleteAllByBookId(bookId);
     }
 }

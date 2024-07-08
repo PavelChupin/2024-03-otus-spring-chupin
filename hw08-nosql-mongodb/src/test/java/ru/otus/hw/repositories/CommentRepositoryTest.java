@@ -47,4 +47,19 @@ class CommentRepositoryTest {
                 }
         );
     }
+
+    @DisplayName("Должен удалить комментарии для книги")
+    @Test
+    void deleteByBookIdAllTest() {
+        final String bookId = bookRepository.findAll().get(0).getId();
+
+        commentRepository.deleteAllByBookId(bookId);
+
+        final Query query = new Query();
+        query.addCriteria(Criteria.where("book._id").is(bookId));
+
+        final List<Comment> actual = mongoTemplate.find(query, Comment.class);
+
+        assertThat(actual).isEmpty();
+    }
 }
