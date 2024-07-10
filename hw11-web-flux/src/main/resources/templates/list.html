@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>List of all books</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .books {
+            border: 1px solid steelblue;
+            width: 300px;
+            border-collapse: collapse;
+        }
+
+        .books tr td, th {
+            padding: 5px;
+            border: 1px solid steelblue;
+        }
+
+        .books td:last-child, td:first-child {
+            width: 50px;
+        }
+    </style>
+</head>
+<body>
+<h3>Books:</h3>
+
+<table id="table-book" class="books">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Genre</th>
+        <th>Edit</th>
+        <th>Delete</th>
+    </tr>
+    </thead>
+    <tbody id="table-book-body">
+    </tbody>
+</table>
+<form id="add-book-page" action="list.html" th:action="@{/create/book}">
+    <div class="row">
+        <button type="submit">InsertBook</button>
+    </div>
+</form>
+<script>
+    function GetInfoBooks() {
+        fetch('/api/v1/book', {
+            //url: "/api/info",
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            //contentType: "application/json",
+        }).then(response => response.json())
+            .then((json) => {
+                let li = "";
+                // 3. Loop through each data and add a table row
+                json.forEach((book) => {
+                    li += `<tr>
+                            <td>${book.id}</td>
+                            <td>${book.title} </td>
+                            <td>${book.author.fullName}</td>
+                            <td>${book.genre.name}</td>
+                            <td><a href="/edit/book/${book.id}">Edit</a></td>
+                            <td><a href="/delete/book/${book.id}">Delete</a></td>
+                           </tr>`;
+                });
+
+                // Прикрепляем сформированный кусок текста HTML к тегу с id = table-book-body
+                document.getElementById("table-book-body").innerHTML = li;
+            });
+    }
+
+    window.onload = () => {
+        GetInfoBooks();
+    };
+</script>
+</body>
+</html>
