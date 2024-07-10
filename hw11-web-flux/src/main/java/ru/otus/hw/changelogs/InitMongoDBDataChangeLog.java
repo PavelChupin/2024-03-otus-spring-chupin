@@ -40,33 +40,33 @@ public class InitMongoDBDataChangeLog {
 
     @ChangeSet(order = "001", id = "initGenres", author = "chupinpavel", runAlways = true)
     public void initGenres(GenreRepository repository) {
-        genre1 = repository.save(new Genre("Genre_1"));
-        genre2 = repository.save(new Genre("Genre_2"));
-        genre3 = repository.save(new Genre("Genre_3"));
+        genre1 = repository.save(new Genre("Genre_1")).block();
+        genre2 = repository.save(new Genre("Genre_2")).block();
+        genre3 = repository.save(new Genre("Genre_3")).block();
     }
 
     @ChangeSet(order = "002", id = "initAuthors", author = "chupinpavel", runAlways = true)
     public void initAuthors(AuthorRepository repository) {
-        author1 = repository.save(new Author("Author_1"));
-        author2 = repository.save(new Author("Author_2"));
-        author3 = repository.save(new Author("Author_3"));
+        author1 = repository.save(new Author("Author_1")).block();
+        author2 = repository.save(new Author("Author_2")).block();
+        author3 = repository.save(new Author("Author_3")).block();
     }
 
     @ChangeSet(order = "003", id = "initBooks", author = "chupinpavel", runAlways = true)
     public void initBooks(BookRepository repository) {
-        book1 = repository.save(new Book("BookTitle_1", author1, genre1));
-        book2 = repository.save(new Book("BookTitle_2", author2, genre2));
-        book3 = repository.save(new Book("BookTitle_3", author3, genre3));
+        book1 = repository.save(new Book("BookTitle_1", author1, genre1)).block();
+        book2 = repository.save(new Book("BookTitle_2", author2, genre2)).block();
+        book3 = repository.save(new Book("BookTitle_3", author3, genre3)).block();
     }
 
     @ChangeSet(order = "004", id = "initComments", author = "chupinpavel", runAlways = true)
     public void initComments(CommentRepository repository) {
-        repository.save(new Comment("comment_1_1", book1));
-        repository.save(new Comment("comment_1_2", book1));
-        repository.save(new Comment("comment_2_1", book2));
-        repository.save(new Comment("comment_2_2", book2));
-        repository.save(new Comment("comment_3_1", book3));
-        repository.save(new Comment("comment_3_2", book3));
-        repository.save(new Comment("comment_3_3", book3));
+        repository.save(new Comment("comment_1_1", book1)).block();
+        repository.save(new Comment("comment_1_2", book1)).block();
+        repository.save(new Comment("comment_2_1", book2)).block();
+        repository.save(new Comment("comment_2_2", book2)).block();
+        repository.save(new Comment("comment_3_1", book3)).block();
+        repository.save(new Comment("comment_3_2", book3)).block();
+        repository.save(new Comment("comment_3_3", book3)).block();
     }
 }

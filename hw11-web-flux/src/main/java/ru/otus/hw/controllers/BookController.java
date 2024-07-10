@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.hw.controllers.handler.BookExceptionHandler;
 import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.BookUpdateDto;
 import ru.otus.hw.services.BookService;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,31 +27,28 @@ public class BookController {
 
     private final BookService bookService;
 
-    @GetMapping(value = "/api/v1/book", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/api/v1/book")
     @ResponseStatus(HttpStatus.OK)
-    public List<BookDto> list() {
+    public Flux<BookDto> list() {
         return bookService.findAll();
     }
 
-    @GetMapping(value = "/api/v1/book/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/api/v1/book/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public BookDto bookById(@PathVariable("id") String id) {
+    public Mono<BookDto> bookById(@PathVariable("id") String id) {
         return bookService.findById(id);
     }
 
-    @PutMapping(value = "/api/v1/book/{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/api/v1/book/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public BookDto update(@Valid @RequestBody BookUpdateDto bookUpdateDto) {
+    public Mono<BookDto> update(@Valid @RequestBody BookUpdateDto bookUpdateDto) {
         return bookService.update(bookUpdateDto);
     }
 
     @PostMapping(value = "/api/v1/book",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public BookDto create(@Valid @RequestBody BookCreateDto bookCreateDto) {
+    public Mono<BookDto> create(@Valid @RequestBody BookCreateDto bookCreateDto) {
         return bookService.create(bookCreateDto);
     }
 

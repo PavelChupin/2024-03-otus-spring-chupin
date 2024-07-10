@@ -3,6 +3,7 @@ package ru.otus.hw.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.repositories.GenreRepository;
 import ru.otus.hw.services.mapper.GenreMapper;
@@ -17,9 +18,9 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<GenreDto> findAll() {
-        return genreRepository.findAll().stream()
+    public Flux<GenreDto> findAll() {
+        return genreRepository.findAll()
                 .map(GenreMapper::toDto)
-                .collect(Collectors.toList());
+                .switchIfEmpty(Flux.empty());
     }
 }

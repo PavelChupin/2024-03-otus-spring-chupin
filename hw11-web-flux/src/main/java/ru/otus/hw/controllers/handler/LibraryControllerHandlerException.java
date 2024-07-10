@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import reactor.core.publisher.Mono;
 import ru.otus.hw.dto.ErrorDto;
 import ru.otus.hw.exceptions.NotFoundException;
 
@@ -17,22 +18,22 @@ public class LibraryControllerHandlerException {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorDto exceptionHandler(Exception e) {
+    public Mono<ErrorDto> exceptionHandler(Exception e) {
         log.error("Internal Server Error.", e);
-        return new ErrorDto(e.toString());
+        return Mono.just(new ErrorDto(e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDto exceptionHandler(MethodArgumentNotValidException e) {
+    public Mono<ErrorDto> exceptionHandler(MethodArgumentNotValidException e) {
         log.warn("Bad Request.", e);
-        return new ErrorDto(e.getMessage());
+        return Mono.just(new ErrorDto(e.getMessage()));
     }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorDto exceptionHandler(NotFoundException e) {
+    public Mono<ErrorDto> exceptionHandler(NotFoundException e) {
         log.warn("Not Found.", e);
-        return new ErrorDto(e.getMessage());
+        return Mono.just(new ErrorDto(e.getMessage()));
     }
 }
