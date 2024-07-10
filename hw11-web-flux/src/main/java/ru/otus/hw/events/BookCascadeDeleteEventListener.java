@@ -22,7 +22,8 @@ public class BookCascadeDeleteEventListener extends AbstractMongoEventListener<B
         super.onBeforeDelete(event);
         final String bookId = event.getSource().get("_id").toString();
 
-        final List<Comment> comments = commentRepository.findAllByBookId(bookId);
-        commentRepository.deleteAll(comments);
+//        final List<Comment> comments = commentRepository.findAllByBookId(bookId);
+//        commentRepository.deleteAll(comments);
+        commentRepository.deleteAllByBookId(bookId);
     }
 }
