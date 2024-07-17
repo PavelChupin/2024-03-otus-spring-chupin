@@ -16,10 +16,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfiguration {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)
-            throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 // Настройка страниц и запросов для которых требуется авторизация
@@ -27,25 +25,20 @@ public class SecurityConfiguration {
                         // Разрешаем для стартовой страници
                         .requestMatchers("/").permitAll()
                         // Для всех остальных требуется аутинфикация
-                        .requestMatchers("/**").authenticated()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/**").authenticated().anyRequest().permitAll()
                 )
                 //.anonymous(a -> a.principal(new AnonimusUD()).authorities("ROLE_ANONYMOUS"))
                 //.addFilterAfter(new MyOwnFilter(), AuthorizationFilter.class)
-
-                // Аунтификация через BASE аунтификацию логин и пароль передается в Header в параметре Authorization в кодировке BASE64 (login:pass)
+                // Аунтификация через BASE аунтификацию логин и пароль передается в Header в параметре
+                // Authorization в кодировке BASE64 (login:pass)
                 //.httpBasic(Customizer.withDefaults());
-
                 // Аунтификация через форму логина и пароля form-base
                 // Оставаться на той же странице куда выполнили переход и перед которой потребовалась аутинфикация
                 .formLogin(Customizer.withDefaults());
                 // Переходы на нужные страницы в случаии успешной или неуспешной аутинфикации
-                //.formLogin(fm -> fm.defaultSuccessUrl("/success")
-                //        .failureForwardUrl("/fail"));
-
+                //.formLogin(fm -> fm.defaultSuccessUrl("/success").failureForwardUrl("/fail"));
                 // На какой период времени запоминать аунтификацию
-                //.rememberMe(rm -> rm.key("AnyKey")
-                //        .tokenValiditySeconds(600));
+                //.rememberMe(rm -> rm.key("AnyKey").tokenValiditySeconds(600));
         return http.build();
     }
 
