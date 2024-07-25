@@ -22,26 +22,15 @@ public class SecurityConfiguration {
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 // Настройка страниц и запросов для которых требуется авторизация
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/").permitAll()
                         // Разрешаем для стартовой страници
-                        //.requestMatchers("/").permitAll()
+                        .requestMatchers("/").permitAll()
                         // Для всех остальных требуется аутинфикация
-                        .requestMatchers("/create/**", "/delete/**", "/edit/**").hasAnyRole("ADMIN", "LIBRARIAN")
+                        .requestMatchers("/create/**", "/delete/**", "/edit/**")
+                        .hasAnyRole("ADMIN", "LIBRARIAN")
                         .requestMatchers("/*").authenticated()
                         .anyRequest().denyAll()
                 )
-                //.anonymous(a -> a.principal(new AnonimusUD()).authorities("ROLE_ANONYMOUS"))
-                //.addFilterAfter(new MyOwnFilter(), AuthorizationFilter.class)
-                // Аунтификация через BASE аунтификацию логин и пароль передается в Header в параметре
-                // Authorization в кодировке BASE64 (login:pass)
-                //.httpBasic(Customizer.withDefaults());
-                // Аунтификация через форму логина и пароля form-base
-                // Оставаться на той же странице куда выполнили переход и перед которой потребовалась аутинфикация
                 .formLogin(Customizer.withDefaults());
-        // Переходы на нужные страницы в случаии успешной или неуспешной аутинфикации
-        //.formLogin(fm -> fm.defaultSuccessUrl("/success").failureForwardUrl("/fail"));
-        // На какой период времени запоминать аунтификацию
-        //.rememberMe(rm -> rm.key("AnyKey").tokenValiditySeconds(600));
         return http.build();
     }
 
