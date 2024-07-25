@@ -6,7 +6,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,10 +38,10 @@ public class SecurityConfiguration {
                 // Аунтификация через форму логина и пароля form-base
                 // Оставаться на той же странице куда выполнили переход и перед которой потребовалась аутинфикация
                 .formLogin(Customizer.withDefaults());
-                // Переходы на нужные страницы в случаии успешной или неуспешной аутинфикации
-                //.formLogin(fm -> fm.defaultSuccessUrl("/success").failureForwardUrl("/fail"));
-                // На какой период времени запоминать аунтификацию
-                //.rememberMe(rm -> rm.key("AnyKey").tokenValiditySeconds(600));
+        // Переходы на нужные страницы в случаии успешной или неуспешной аутинфикации
+        //.formLogin(fm -> fm.defaultSuccessUrl("/success").failureForwardUrl("/fail"));
+        // На какой период времени запоминать аунтификацию
+        //.rememberMe(rm -> rm.key("AnyKey").tokenValiditySeconds(600));
         return http.build();
     }
 

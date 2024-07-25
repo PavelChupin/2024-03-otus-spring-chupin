@@ -2,6 +2,9 @@ package ru.otus.hw.configuration;
 
 import javax.sql.DataSource;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
@@ -24,10 +27,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Configuration
 @EnableAutoConfiguration
+@RequiredArgsConstructor
+@Getter
+@Setter
 public class ACLContext {
 
-    @Autowired
-    DataSource dataSource;
+    private final DataSource dataSource;
 
     @Bean
     public SpringCacheBasedAclCache aclCache() {
