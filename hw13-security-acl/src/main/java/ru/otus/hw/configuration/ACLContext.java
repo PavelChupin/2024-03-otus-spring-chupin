@@ -87,7 +87,7 @@ public class ACLContext {
         JdbcMutableAclService mutableAclService = new JdbcMutableAclService(dataSource, lookupStrategy, aclCache);
 
         // Запрос на получение идентификатора созданной записи в acl_class
-       mutableAclService.setClassIdentityQuery("select currval('acl_class_id_seq')");
+        mutableAclService.setClassIdentityQuery("select currval('acl_class_id_seq')");
         // Запрос на получение идентификатора созданной записи в acl_sid
         mutableAclService.setSidIdentityQuery("select currval('acl_sid_id_seq')");
         // Принудительное использование информации о типе идентификаторов сущностей из БД
@@ -105,8 +105,9 @@ public class ACLContext {
     }
 
 //    @Bean
-//    public MethodSecurityExpressionHandler defaultMethodSecurityExpressionHandler(MutableAclService aclService,
-//                                                                                  AclPermissionEvaluator permissionEvaluator) {
+//    public MethodSecurityExpressionHandler defaultMethodSecurityExpressionHandler(
+//            MutableAclService aclService,
+//            AclPermissionEvaluator permissionEvaluator) {
 //        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
 //        expressionHandler.setPermissionEvaluator(permissionEvaluator);
 //        expressionHandler.setPermissionCacheOptimizer(new AclPermissionCacheOptimizer(aclService));
@@ -115,8 +116,9 @@ public class ACLContext {
 
     @Bean
     // Handler работающий с методами. Он сам внедряется к контект спринга и нужные компоненты.
-    public DefaultMethodSecurityExpressionHandler methodSecurityExpressionHandler(AclPermissionEvaluator permissionEvaluator,
-                                                                                  ApplicationContext applicationContext) {
+    public DefaultMethodSecurityExpressionHandler methodSecurityExpressionHandler(
+            AclPermissionEvaluator permissionEvaluator,
+            ApplicationContext applicationContext) {
         // Компонент для обработки SPEL-выражений для безопасности методов
         // В отличие от DefaultHttpSecurityExpressionHandler он внедряется сам в зависимые объекты
         var defaultHttpSecurityExpressionHandler = new DefaultMethodSecurityExpressionHandler();
@@ -127,8 +129,9 @@ public class ACLContext {
 
     @Bean
     // Handler работающий в http фильтрах
-    public DefaultHttpSecurityExpressionHandler httpSecurityExpressionHandler(AclPermissionEvaluator permissionEvaluator,
-                                                                              ApplicationContext applicationContext) {
+    public DefaultHttpSecurityExpressionHandler httpSecurityExpressionHandler(
+            AclPermissionEvaluator permissionEvaluator,
+            ApplicationContext applicationContext) {
         // Компонент для обработки SPEL-выражений для HTTP-безопасности
         var defaultHttpSecurityExpressionHandler = new DefaultHttpSecurityExpressionHandler();
         defaultHttpSecurityExpressionHandler.setPermissionEvaluator(permissionEvaluator);

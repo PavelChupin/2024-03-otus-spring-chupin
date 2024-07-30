@@ -16,12 +16,19 @@ import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.BookUpdateDto;
 import ru.otus.hw.dto.GenreDto;
+import ru.otus.hw.models.Author;
+import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Genre;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
+import ru.otus.hw.services.mapper.AuthorMapper;
+import ru.otus.hw.services.mapper.BookMapper;
+import ru.otus.hw.services.mapper.GenreMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.when;
@@ -35,11 +42,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(BookController.class)
 // Обязательно портируем безопастность, т.к. WebMvcTest поднимает усеченный контекст. И он будет тестировать не нашу безопастность, а дефолтную.
 @Import({SecurityConfiguration.class})
-class BookControllerTest {
+class BookControllerRolesTest {
 
     @Autowired
     private MockMvc mockMvc;
-
 
     @MockBean
     private BookService bookService;
@@ -50,20 +56,33 @@ class BookControllerTest {
     @MockBean
     private AuthorService authorService;
 
-    private static final List<GenreDto> genres = new ArrayList<>();
-    private static final List<AuthorDto> authors = new ArrayList<>();
-    private static final List<BookDto> books = new ArrayList<>();
     private static final String USER_NAME = "user";
+
+    private static final List<Genre> genres = new ArrayList<>();
+    private static final List<Author> authors = new ArrayList<>();
+    private static final List<Book> books = new ArrayList<>();
+    private static final List<GenreDto> genreDtos = new ArrayList<>();
+    private static final List<AuthorDto> authorDtos = new ArrayList<>();
+    private static final List<BookDto> bookDtos = new ArrayList<>();
 
     @BeforeAll
     static void init() {
-        genres.add(new GenreDto(1L, "Genre1"));
-        genres.add(new GenreDto(2L, "Genre2"));
-        authors.add(new AuthorDto(1L, "Author1"));
-        authors.add(new AuthorDto(2L, "Author2"));
-        books.add(new BookDto(1L, "Book1", authors.get(0), genres.get(0)));
-        books.add(new BookDto(2L, "Book2", authors.get(1), genres.get(1)));
-        books.add(new BookDto(3L, "Book3", authors.get(1), genres.get(1)));
+        genres.add(new Genre(1L, "Genre1"));
+        genres.add(new Genre(2L, "Genre2"));
+        authors.add(new Author(1L, "Author1"));
+        authors.add(new Author(2L, "Author2"));
+        books.add(new Book(1L, "Book1", authors.get(0), genres.get(0)));
+        books.add(new Book(2L, "Book2", authors.get(1), genres.get(1)));
+        books.add(new Book(3L, "Book3", authors.get(1), genres.get(1)));
+        authorDtos.addAll(authors.stream()
+                .map(AuthorMapper::toDto)
+                .collect(Collectors.toList()));
+        genreDtos.addAll(genres.stream()
+                .map(GenreMapper::toDto)
+                .collect(Collectors.toList()));
+        bookDtos.addAll(books.stream()
+                .map(BookMapper::toDto)
+                .collect(Collectors.toList()));
     }
 
     private void mock() {
@@ -78,10 +97,11 @@ class BookControllerTest {
     @MethodSource("userDetailsParams")
     void listBooksPage(UserDetails userDetails) throws Exception {
         mock();
+
         mockMvc.perform(get("/list").with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(view().name("list"))
-                .andExpect(model().attribute("books", books));
+                .andExpect(model().attribute("books", bookDtos));
     }
 
     @DisplayName("Должен проверить и вернуть страницу добавления книги, только для ADMIN и LIB")
@@ -93,11 +113,11 @@ class BookControllerTest {
                     .andExpect(status().isForbidden());
         } else {
             mock();
-            mockMvc.perform(get("/create/book").with(user(userDetails)))
-                    .andExpect(status().isOk())
-                    .andExpect(view().name("create"))
-                    .andExpect(model().attribute("genres", genres))
-                    .andExpect(model().attribute("authors", authors));
+                    mockMvc.perform(get("/create/book").with(user(userDetails)))
+                            .andExpect(status().isOk())
+                            .andExpect(view().name("create"))
+                            .andExpect(model().attribute("genres", genreDtos))
+                            .andExpect(model().attribute("authors", authorDtos));
         }
     }
 
@@ -105,18 +125,19 @@ class BookControllerTest {
     @ParameterizedTest
     @MethodSource("userDetailsParams")
     void editPage(UserDetails userDetails) throws Exception {
-        final BookDto bookDto = books.get(0);
+        final Book book = books.get(0);
 
         if (USER_NAME.equals(userDetails.getUsername())) {
-            mockMvc.perform(get(String.format("/edit/book/%d", bookDto.getId())).with(user(userDetails)))
+            mockMvc.perform(get(String.format("/edit/book/%d", book.getId())).with(user(userDetails)))
                     .andExpect(status().isForbidden());
         } else {
             mock();
-            mockMvc.perform(get(String.format("/edit/book/%d", bookDto.getId())).with(user(userDetails)))
+            BookDto bookDto = BookMapper.toDto(book);
+            mockMvc.perform(get(String.format("/edit/book/%d", book.getId())).with(user(userDetails)))
                     .andExpect(status().isOk())
                     .andExpect(view().name("edit"))
-                    .andExpect(model().attribute("genres", genres))
-                    .andExpect(model().attribute("authors", authors))
+                    .andExpect(model().attribute("genres", genreDtos))
+                    .andExpect(model().attribute("authors", authorDtos))
                     .andExpect(model().attribute("book", bookDto));
         }
     }
@@ -125,13 +146,14 @@ class BookControllerTest {
     @ParameterizedTest
     @MethodSource("userDetailsParams")
     void deletePage(UserDetails userDetails) throws Exception {
-        final BookDto bookDto = books.get(0);
+        final Book book = books.get(0);
         if (USER_NAME.equals(userDetails.getUsername())) {
-            mockMvc.perform(get(String.format("/delete/book/%d", bookDto.getId())).with(user(userDetails)))
+            mockMvc.perform(get(String.format("/delete/book/%d", book.getId())).with(user(userDetails)))
                     .andExpect(status().isForbidden());
         } else {
             mock();
-            mockMvc.perform(get(String.format("/delete/book/%d", bookDto.getId())).with(user(userDetails)))
+            BookDto bookDto = BookMapper.toDto(book);
+            mockMvc.perform(get(String.format("/delete/book/%d", book.getId())).with(user(userDetails)))
                     .andExpect(status().isOk())
                     .andExpect(view().name("delete"))
                     .andExpect(model().attribute("book", bookDto));
@@ -142,8 +164,8 @@ class BookControllerTest {
     @ParameterizedTest
     @MethodSource("userDetailsParams")
     void update(UserDetails userDetails) throws Exception {
-        final BookDto bookDto = books.get(0);
-        final BookUpdateDto bookUpdateDto = getBookUpdateDtoByBookDto(bookDto);
+        final Book book = books.get(0);
+        final BookUpdateDto bookUpdateDto = getBookUpdateDtoByBookDto(book);
 
         if (USER_NAME.equals(userDetails.getUsername())) {
             mockMvc.perform(post(String.format("/edit/book/%d", bookUpdateDto.getId())).with(user(userDetails))
@@ -154,7 +176,8 @@ class BookControllerTest {
             )
                     .andExpect(status().isForbidden());
         } else {
-            when(bookService.update(bookUpdateDto)).thenReturn(bookDto);
+            when(bookService.update(book, bookUpdateDto.getTitle(), bookUpdateDto.getAuthorId(), bookUpdateDto.getGenreId()))
+                    .thenReturn(book);
             mockMvc.perform(post(String.format("/edit/book/%d", bookUpdateDto.getId())).with(user(userDetails))
                     .param("id", bookUpdateDto.getId().toString())
                     .param("title", bookUpdateDto.getTitle())
@@ -185,8 +208,8 @@ class BookControllerTest {
     @ParameterizedTest
     @MethodSource("userDetailsParams")
     void createBook(UserDetails userDetails) throws Exception {
-        final BookDto bookDto = books.get(0);
-        final BookCreateDto bookCreateDto = getBookCreateDtoByBookDto(bookDto);
+        final Book book = books.get(0);
+        final BookCreateDto bookCreateDto = getBookCreateDtoByBookDto(book);
 
         if (USER_NAME.equals(userDetails.getUsername())) {
             mockMvc.perform(post("/create/book").with(user(userDetails))
@@ -196,7 +219,7 @@ class BookControllerTest {
             )
                     .andExpect(status().isForbidden());
         } else {
-            when(bookService.create(bookCreateDto)).thenReturn(bookDto);
+            when(bookService.create(bookCreateDto)).thenReturn(book);
 
             mockMvc.perform(post("/create/book").with(user(userDetails))
                     .param("title", bookCreateDto.getTitle())
@@ -234,20 +257,20 @@ class BookControllerTest {
         return Stream.of(admin, user, lib);
     }
 
-    private BookCreateDto getBookCreateDtoByBookDto(BookDto bookdto) {
+    private BookCreateDto getBookCreateDtoByBookDto(Book book) {
         final BookCreateDto bookCreateDto = new BookCreateDto();
-        bookCreateDto.setTitle(bookdto.getTitle());
-        bookCreateDto.setAuthorId(bookdto.getAuthorDto().getId());
-        bookCreateDto.setGenreId(bookdto.getGenreDto().getId());
+        bookCreateDto.setTitle(book.getTitle());
+        bookCreateDto.setAuthorId(book.getAuthor().getId());
+        bookCreateDto.setGenreId(book.getGenre().getId());
         return bookCreateDto;
     }
 
-    private BookUpdateDto getBookUpdateDtoByBookDto(BookDto bookDto) {
+    private BookUpdateDto getBookUpdateDtoByBookDto(Book book) {
         final BookUpdateDto bookUpdateDto = new BookUpdateDto();
-        bookUpdateDto.setId(bookDto.getId());
-        bookUpdateDto.setTitle(bookDto.getTitle());
-        bookUpdateDto.setAuthorId(bookDto.getAuthorDto().getId());
-        bookUpdateDto.setGenreId(bookDto.getGenreDto().getId());
+        bookUpdateDto.setId(book.getId());
+        bookUpdateDto.setTitle(book.getTitle());
+        bookUpdateDto.setAuthorId(book.getAuthor().getId());
+        bookUpdateDto.setGenreId(book.getGenre().getId());
         return bookUpdateDto;
     }
 }

@@ -11,7 +11,6 @@ import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.acls.model.ObjectIdentity;
-import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.BookCreateDto;
@@ -94,7 +93,8 @@ public class BookServiceImpl implements BookService {
         // После создания объекта нужно создать ACL для него
         ObjectIdentity oid = new ObjectIdentityImpl(bookResult);
 
-        // Можно только под пользователем запустивгим метод, нельзя делать из под роли.
+        // Можно только под пользователем запустившим метод, нельзя делать из под роли,
+        // особенность реализации в ядре ACL.
         var acl = mutableAclService.createAcl(oid);
         //acl.setOwner(owner);
 
@@ -102,7 +102,7 @@ public class BookServiceImpl implements BookService {
         acl.insertAce(acl.getEntries().size(), BasePermission.READ,
                 new GrantedAuthoritySid("ROLE_LIBRARIAN"), true);
         acl.insertAce(acl.getEntries().size(), BasePermission.READ,
-              new PrincipalSid("user"), true);
+                new PrincipalSid("user"), true);
 
         // Обновим ACL
         this.mutableAclService.updateAcl(acl);

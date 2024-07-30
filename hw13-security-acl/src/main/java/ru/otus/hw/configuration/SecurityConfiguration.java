@@ -16,8 +16,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfiguration {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http/*,
-                                                   DefaultHttpSecurityExpressionHandler httpSecurityExpressionHandler*/) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http
+            /*DefaultHttpSecurityExpressionHandler httpSecurityExpressionHandler*/) throws Exception {
 //       WebExpressionAuthorizationManager manager = new WebExpressionAuthorizationManager(
 //                "hasPermission(#id, 'ru.otus.hw.model.Book', 'READ')");
 //        manager.setExpressionHandler(httpSecurityExpressionHandler);
