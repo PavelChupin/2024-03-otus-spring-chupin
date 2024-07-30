@@ -16,8 +16,12 @@ import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
+import ru.otus.hw.services.mapper.AuthorMapper;
+import ru.otus.hw.services.mapper.BookMapper;
+import ru.otus.hw.services.mapper.GenreMapper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,7 +35,9 @@ public class BookController {
 
     @GetMapping("/list")
     public String listBooksPage(Model model) {
-        final List<BookDto> bookDtos = bookService.findAll();
+        final List<BookDto> bookDtos = bookService.findAll().stream()
+                .map(BookMapper::toDto)
+                .collect(Collectors.toList());
         model.addAttribute("books", bookDtos);
 
         return "list";
@@ -39,8 +45,12 @@ public class BookController {
 
     @GetMapping("/create/book")
     public String createBookPage(Model model) {
-        final List<GenreDto> genreDtos = genreService.findAll();
-        final List<AuthorDto> authorDtos = authorService.findAll();
+        final List<GenreDto> genreDtos = genreService.findAll().stream()
+                .map(GenreMapper::toDto)
+                .collect(Collectors.toList());
+        final List<AuthorDto> authorDtos = authorService.findAll().stream()
+                .map(AuthorMapper::toDto)
+                .collect(Collectors.toList());
 
         model.addAttribute("genres", genreDtos);
         model.addAttribute("authors", authorDtos);
@@ -50,9 +60,13 @@ public class BookController {
 
     @GetMapping("/edit/book/{id}")
     public String editPage(@PathVariable("id") Long id, Model model) {
-        final BookDto bookDto = bookService.findById(id);
-        final List<GenreDto> genreDtos = genreService.findAll();
-        final List<AuthorDto> authorDtos = authorService.findAll();
+        final BookDto bookDto = BookMapper.toDto(bookService.findById(id));
+        final List<GenreDto> genreDtos = genreService.findAll().stream()
+                .map(GenreMapper::toDto)
+                .collect(Collectors.toList());
+        final List<AuthorDto> authorDtos = authorService.findAll().stream()
+                .map(AuthorMapper::toDto)
+                .collect(Collectors.toList());
 
         model.addAttribute("book", bookDto);
         model.addAttribute("genres", genreDtos);
@@ -63,7 +77,7 @@ public class BookController {
 
     @GetMapping("/delete/book/{id}")
     public String deletePage(@PathVariable("id") Long id, Model model) {
-        final BookDto bookDto = bookService.findById(id);
+        final BookDto bookDto = BookMapper.toDto(bookService.findById(id));
         model.addAttribute("book", bookDto);
 
         return "delete";
@@ -75,14 +89,18 @@ public class BookController {
             return String.format("redirect:/edit/book/%d", bookUpdateDto.getId());
         }
 
-        bookService.update(bookUpdateDto);
+        final var book = bookService.findById(bookUpdateDto.getId());
+
+        bookService.update(book, bookUpdateDto.getTitle(), bookUpdateDto.getAuthorId(), bookUpdateDto.getGenreId());
 
         return "redirect:/list";
     }
 
     @PostMapping("/delete/book/{id}")
     public String delete(@PathVariable("id") Long id) {
-        bookService.deleteById(id);
+        final var book = bookService.findById(id);
+        bookService.delete(book);
+        //bookService.deleteById(id);
         return "redirect:/list";
     }
 

@@ -16,19 +16,26 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfiguration {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http/*,
+                                                   DefaultHttpSecurityExpressionHandler httpSecurityExpressionHandler*/) throws Exception {
+//       WebExpressionAuthorizationManager manager = new WebExpressionAuthorizationManager(
+//                "hasPermission(#id, 'ru.otus.hw.model.Book', 'READ')");
+//        manager.setExpressionHandler(httpSecurityExpressionHandler);
+
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 // Настройка страниц и запросов для которых требуется авторизация
                 .authorizeHttpRequests((authorize) -> authorize
-                        // Разрешаем для стартовой страници
-                        .requestMatchers("/").permitAll()
-                        // Для всех остальных требуется аутинфикация
-                        .requestMatchers("/create/**", "/delete/**", "/edit/**")
-                        .hasAnyRole("ADMIN", "LIBRARIAN")
-                        .requestMatchers("/*").authenticated()
-                        .anyRequest().denyAll()
+                                // Разрешаем для стартовой страници
+                                .requestMatchers("/").permitAll()
+                                // Для всех остальных требуется аутинфикация
+//                        .requestMatchers("/edit/book/{id}")
+//                        .access(manager)
+                                .requestMatchers("/create/**", "/delete/**", "/edit/**")
+                                .hasAnyRole("ADMIN", "LIBRARIAN")
+                                .requestMatchers("/**").authenticated()
+                                .anyRequest().denyAll()
                 )
                 .formLogin(Customizer.withDefaults());
         return http.build();
