@@ -30,6 +30,7 @@
         <module>hw10-mvc-rest</module>
         <module>hw12-security</module>
         <module>hw13-security-acl</module>
+        <module>hw17-docker</module>
     </modules>
 
     <properties>

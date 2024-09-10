@@ -1,0 +1,31 @@
+version: '1'
+services:
+  app:
+    # Собираем контейнер по Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      # Первое значение это Порт локальный, второе внутри контейнера
+      - "8084:8080"
+    # Эти свойства перегружают соответствующие в application.yml
+    environment:
+      # Так как в application.yml задан порт 8082, а выше мы определили что в контейнере будет 8080, то переопределяем для приложения
+      - SERVER_PORT=8080
+      # Так как у нас оба образа запускается в одном контейнере, то указывается URL и Порт базы,
+      # как она поднимается в контейнере (postgres:5432),
+      # а не локально (localhost:5435)
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+  postgres:
+    # Используем существующий контейнер в локальной копии Docker или скачиваем из DockerHub
+    image: "postgres:13"
+    ports:
+      # Первое значение это Порт локальный, второе внутри контейнера
+      - "5435:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=db
+
