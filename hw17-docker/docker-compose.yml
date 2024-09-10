@@ -1,7 +1,7 @@
 version: '1'
 services:
   app:
-    # Собираем контейнер по Dockerfile
+    # Собираем image (образ) по Dockerfile
     build:
       context: .
       dockerfile: Dockerfile
