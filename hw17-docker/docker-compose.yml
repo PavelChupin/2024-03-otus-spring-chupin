@@ -1,0 +1,47 @@
+version: '1'
+services:
+  library-service:
+    # Собираем image (образ) по Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # Добавим управление порядком запуска для себя описание тут https://docs.docker.com/compose/startup-order/
+    depends_on:
+      # Имя сервиса от которого зависим
+      postgres:
+        # Условия запуска используем healthcheck описанный в сервисе от которого зависим
+        condition: service_healthy
+
+    ports:
+      # Первое значение это Порт локальный, второе внутри контейнера
+      - "8084:8080"
+    # Эти свойства перегружают соответствующие в application.yml
+    environment:
+      # Так как в application.yml задан порт 8082, а выше мы определили что в контейнере будет 8080, то переопределяем для приложения
+      - SERVER_PORT=8080
+      # Так как у нас оба образа запускается в одном контейнере, то указывается URL и Порт базы,
+      # как она поднимается в контейнере (postgres:5432),
+      # а не локально (localhost:5435)
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/library-db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+
+  postgres:
+    # Используем существующий контейнер в локальной копии Docker или скачиваем из DockerHub
+    image: "postgres:13"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d library-db" ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+    ports:
+      # Первое значение это Порт локальный, второе внутри контейнера
+      - "5435:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=library-db
+
